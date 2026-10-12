@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Canvas
+GenericName=Phone notification
+Comment=Notification mirrored from a phone
+Icon=tether-notification-canvas
+Exec=tether-gtk
+Terminal=false
+NoDisplay=true

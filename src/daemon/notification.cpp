@@ -86,13 +86,20 @@ namespace tether {
             return {};
         }
 
-        // Identifies the sending application to the notification server. Without
-        // this KDE shows the popup and then forgets it.
-        void set_identity(NotifyNotification* notification, const std::string& app_name) {
-            notify_notification_set_hint(notification, "desktop-entry", g_variant_new_string(DESKTOP_ENTRY));
+        // Identifies the sending app to the notification server. Servers use
+        // this desktop entry for the app label and may take its icon over the
+        // icon passed to NotifyNotification.
+        void set_identity(NotifyNotification* notification,
+                          const std::string& app_name,
+                          const std::string& icon = {}) {
+            // Notification servers use desktop-entry as the notification's app
+            // identity and may replace the supplied icon with that entry's icon.
+            // Give bundled iPhone app icons their own matching identity so the
+            // server keeps both the app name and its icon instead of showing Tether.
+            const std::string desktop_entry = icon.starts_with("tether-notification-") ? icon : DESKTOP_ENTRY;
+            notify_notification_set_hint(notification, "desktop-entry", g_variant_new_string(desktop_entry.c_str()));
             if (!app_name.empty()) {
-                // Keeps history and configuration grouped under Tether while the
-                // header names the iPhone app the notification came from.
+                // KDE uses this label for the originating iPhone app.
                 notify_notification_set_hint(
                     notification, "x-kde-display-appname", g_variant_new_string(app_name.c_str()));
             }
@@ -295,7 +302,7 @@ namespace tether {
             if (!notification)
                 return G_SOURCE_REMOVE;
 
-            set_identity(notification, spec->app_name);
+            set_identity(notification, spec->app_name, icon);
             notify_notification_set_urgency(notification, spec->quiet ? NOTIFY_URGENCY_LOW : NOTIFY_URGENCY_NORMAL);
 
             const AppLauncher launcher = spec->app_id.empty() ? AppLauncher{} : resolve_launcher(spec->app_id);

@@ -66,3 +66,11 @@ install(FILES icons/symbolic/tether-symbolic.svg
               icons/symbolic/tether-offline-symbolic.svg
               icons/symbolic/tether-unread-symbolic.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/symbolic/apps)
+
+file(GLOB TETHER_NOTIFICATION_ICONS CONFIGURE_DEPENDS icons/notifications/*.svg)
+install(FILES ${TETHER_NOTIFICATION_ICONS}
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+
+file(GLOB TETHER_NOTIFICATION_DESKTOP_FILES CONFIGURE_DEPENDS icons/notifications/*.desktop)
+install(FILES ${TETHER_NOTIFICATION_DESKTOP_FILES}
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)

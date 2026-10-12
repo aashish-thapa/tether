@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=X
+GenericName=Phone notification
+Comment=Notification mirrored from a phone
+Icon=tether-notification-x
+Exec=tether-gtk
+Terminal=false
+NoDisplay=true

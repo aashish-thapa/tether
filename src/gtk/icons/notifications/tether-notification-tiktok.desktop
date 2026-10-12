@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=TikTok
+GenericName=Phone notification
+Comment=Notification mirrored from a phone
+Icon=tether-notification-tiktok
+Exec=tether-gtk
+Terminal=false
+NoDisplay=true
