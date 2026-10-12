@@ -44,6 +44,7 @@ TEST(AncsIcons, UsesBrandAndThemeIconsForCommonNotificationApps) {
         {"com.github.stormbreaker.prod", "github"},
         {"com.google.Gmail", "gmail"},
         {"com.hammerandchisel.discord", "discord"},
+        {"com.instructure.icanvas", "canvas"},
         {"com.instructure.ios.CanvasStudent", "canvas"},
         {"com.microsoft.Office.Outlook", "outlook"},
         {"com.microsoft.teams", "teams"},
