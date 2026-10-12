@@ -174,6 +174,7 @@ namespace tether::bluetooth::ancs {
             {"com.instructure.ios.CanvasParent", "canvas"},
             {"com.instructure.ios.CanvasStudent", "canvas"},
             {"com.instructure.ios.CanvasTeacher", "canvas"},
+            {"com.instructure.icanvas", "canvas"},
             {"com.microsoft.Office.Outlook", "outlook"},
             {"com.microsoft.skype.teams", "teams"},
             {"com.microsoft.teams", "teams"},
