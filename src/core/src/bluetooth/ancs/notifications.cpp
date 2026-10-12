@@ -149,11 +149,11 @@ namespace tether::bluetooth::ancs {
         static const std::map<std::string, const char*> by_app_id{
             {"com.amazon.Amazon", "amazon"},
             {"com.apple.MobileAddressBook", "x-office-address-book"},
-            {"com.apple.MobileSMS", "imessage"},
+            {"com.apple.MobileSMS", "internet-chat"},
             {"com.apple.Music", "multimedia-player"},
             {"com.apple.facetime", "camera-web"},
             {"com.apple.mobilecal", "office-calendar"},
-            {"com.apple.mobilemail", "mail"},
+            {"com.apple.mobilemail", "mail-unread"},
             {"com.apple.mobilenotes", "accessories-text-editor"},
             {"com.apple.mobilephone", "call-start"},
             {"com.apple.mobileslideshow", "multimedia-photo-viewer"},

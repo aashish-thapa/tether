@@ -36,10 +36,10 @@ TEST(AncsIcons, PrefersTheAppOverItsCategory) {
         << "the category icon stands in for themes without brand logos";
 }
 
-TEST(AncsIcons, UsesBundledIconsForCommonNotificationApps) {
+TEST(AncsIcons, UsesBrandAndThemeIconsForCommonNotificationApps) {
     const std::vector<std::pair<std::string, std::string>> expected{
-        {"com.apple.MobileSMS", "imessage"},
-        {"com.apple.mobilemail", "mail"},
+        {"com.apple.MobileSMS", "internet-chat"},
+        {"com.apple.mobilemail", "mail-unread"},
         {"com.burbn.instagram", "instagram"},
         {"com.github.stormbreaker.prod", "github"},
         {"com.google.Gmail", "gmail"},
