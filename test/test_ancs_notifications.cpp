@@ -38,7 +38,7 @@ TEST(AncsIcons, PrefersTheAppOverItsCategory) {
 
 TEST(AncsIcons, UsesBrandAndThemeIconsForCommonNotificationApps) {
     const std::vector<std::pair<std::string, std::string>> expected{
-        {"com.apple.MobileSMS", "internet-chat"},
+        {"com.apple.MobileSMS", "chat-message-new-symbolic"},
         {"com.apple.mobilemail", "mail-unread"},
         {"com.burbn.instagram", "instagram"},
         {"com.github.stormbreaker.prod", "github"},
