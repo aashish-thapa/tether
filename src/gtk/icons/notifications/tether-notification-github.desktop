@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=GitHub
-GenericName=Phone notification
-Comment=Notification mirrored from a phone
-Icon=tether-notification-github
-Exec=tether-gtk
-Terminal=false
-NoDisplay=true

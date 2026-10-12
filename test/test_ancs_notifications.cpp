@@ -31,22 +31,22 @@ TEST(AncsIcons, PrefersTheAppOverItsCategory) {
     n.category = CategoryId::Social;
     const auto icons = icon_candidates(n);
     ASSERT_FALSE(icons.empty());
-    EXPECT_EQ(icons.front(), "tether-notification-instagram");
+    EXPECT_EQ(icons.front(), "instagram");
     EXPECT_NE(std::find(icons.begin(), icons.end(), "internet-chat"), icons.end())
         << "the category icon stands in for themes without brand logos";
 }
 
 TEST(AncsIcons, UsesBundledIconsForCommonNotificationApps) {
     const std::vector<std::pair<std::string, std::string>> expected{
-        {"com.apple.MobileSMS", "tether-notification-imessage"},
-        {"com.apple.mobilemail", "tether-notification-mail"},
-        {"com.burbn.instagram", "tether-notification-instagram"},
-        {"com.github.stormbreaker.prod", "tether-notification-github"},
-        {"com.google.Gmail", "tether-notification-gmail"},
-        {"com.hammerandchisel.discord", "tether-notification-discord"},
-        {"com.instructure.ios.CanvasStudent", "tether-notification-canvas"},
-        {"com.microsoft.Office.Outlook", "tether-notification-outlook"},
-        {"com.microsoft.teams", "tether-notification-teams"},
+        {"com.apple.MobileSMS", "imessage"},
+        {"com.apple.mobilemail", "mail"},
+        {"com.burbn.instagram", "instagram"},
+        {"com.github.stormbreaker.prod", "github"},
+        {"com.google.Gmail", "gmail"},
+        {"com.hammerandchisel.discord", "discord"},
+        {"com.instructure.ios.CanvasStudent", "canvas"},
+        {"com.microsoft.Office.Outlook", "outlook"},
+        {"com.microsoft.teams", "teams"},
     };
 
     for (const auto& [app_id, icon] : expected) {

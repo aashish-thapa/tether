@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Instagram
-GenericName=Phone notification
-Comment=Notification mirrored from a phone
-Icon=tether-notification-instagram
-Exec=tether-gtk
-Terminal=false
-NoDisplay=true

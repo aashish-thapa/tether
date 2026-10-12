@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Snapchat
-GenericName=Phone notification
-Comment=Notification mirrored from a phone
-Icon=tether-notification-snapchat
-Exec=tether-gtk
-Terminal=false
-NoDisplay=true

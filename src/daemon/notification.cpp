@@ -86,18 +86,12 @@ namespace tether {
             return {};
         }
 
-        // Identifies the sending app to the notification server. Servers use
-        // this desktop entry for the app label and may take its icon over the
-        // icon passed to NotifyNotification.
-        void set_identity(NotifyNotification* notification,
-                          const std::string& app_name,
-                          const std::string& icon = {}) {
-            // Notification servers use desktop-entry as the notification's app
-            // identity and may replace the supplied icon with that entry's icon.
-            // Give bundled iPhone app icons their own matching identity so the
-            // server keeps both the app name and its icon instead of showing Tether.
-            const std::string desktop_entry = icon.starts_with("tether-notification-") ? icon : DESKTOP_ENTRY;
-            notify_notification_set_hint(notification, "desktop-entry", g_variant_new_string(desktop_entry.c_str()));
+        // File-transfer notifications belong to Tether. Forwarded phone
+        // notifications carry their own standard icon name; don't identify them
+        // as Tether or servers may replace that icon with Tether's app icon.
+        void set_identity(NotifyNotification* notification, const std::string& app_name) {
+            if (app_name.empty())
+                notify_notification_set_hint(notification, "desktop-entry", g_variant_new_string(DESKTOP_ENTRY));
             if (!app_name.empty()) {
                 // KDE uses this label for the originating iPhone app.
                 notify_notification_set_hint(
@@ -302,7 +296,7 @@ namespace tether {
             if (!notification)
                 return G_SOURCE_REMOVE;
 
-            set_identity(notification, spec->app_name, icon);
+            set_identity(notification, spec->app_name);
             notify_notification_set_urgency(notification, spec->quiet ? NOTIFY_URGENCY_LOW : NOTIFY_URGENCY_NORMAL);
 
             const AppLauncher launcher = spec->app_id.empty() ? AppLauncher{} : resolve_launcher(spec->app_id);
