@@ -86,14 +86,13 @@ namespace tether {
             return {};
         }
 
-        // File-transfer notifications belong to Tether. Forwarded phone
-        // notifications carry their own standard icon name; don't identify them
-        // as Tether or servers may replace that icon with Tether's app icon.
+        // Identifies the sending application to the notification server. Without
+        // this KDE shows the popup and then forgets it.
         void set_identity(NotifyNotification* notification, const std::string& app_name) {
-            if (app_name.empty())
-                notify_notification_set_hint(notification, "desktop-entry", g_variant_new_string(DESKTOP_ENTRY));
+            notify_notification_set_hint(notification, "desktop-entry", g_variant_new_string(DESKTOP_ENTRY));
             if (!app_name.empty()) {
-                // KDE uses this label for the originating iPhone app.
+                // Keeps history and configuration grouped under Tether while the
+                // header names the iPhone app the notification came from.
                 notify_notification_set_hint(
                     notification, "x-kde-display-appname", g_variant_new_string(app_name.c_str()));
             }

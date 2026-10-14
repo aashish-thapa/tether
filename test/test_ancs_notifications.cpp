@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <filesystem>
 #include <gtest/gtest.h>
 #include <tether/bluetooth/ancs/notifications.hpp>
 #include <tether/bluetooth/config.hpp>
@@ -36,22 +37,50 @@ TEST(AncsIcons, PrefersTheAppOverItsCategory) {
         << "the category icon stands in for themes without brand logos";
 }
 
-TEST(AncsIcons, UsesBrandAndThemeIconsForCommonNotificationApps) {
-    const std::vector<std::pair<std::string, std::string>> expected{
-        {"com.apple.MobileSMS", "chat-message-new-symbolic"},
-        {"com.apple.mobilemail", "mail-unread"},
-        {"com.burbn.instagram", "instagram"},
-        {"com.github.stormbreaker.prod", "github"},
-        {"com.google.Gmail", "gmail"},
-        {"com.hammerandchisel.discord", "discord"},
-        {"com.instructure.icanvas", "canvas"},
-        {"com.instructure.ios.CanvasStudent", "canvas"},
-        {"com.microsoft.Office.Outlook", "outlook"},
-        {"com.microsoft.teams", "teams"},
+TEST(AncsIcons, PrefersTheThemeOverBundledArt) {
+    const std::vector<std::pair<std::string, std::vector<std::string>>> expected{
+        {"com.apple.MobileSMS", {"internet-chat"}},
+        {"com.microsoft.Office.Outlook", {"ms-outlook"}},
+        {"com.hammerandchisel.discord", {"discord", "tether-app-discord"}},
+        {"com.atebits.Tweetie2", {"twitter", "tether-app-x"}},
+        {"org.whispersystems.signal", {"signal-desktop", "tether-app-signal"}},
+        {"com.instructure.icanvas", {"tether-app-canvas"}},
     };
 
-    for (const auto& [app_id, icon] : expected) {
-        EXPECT_EQ(icon_candidates(make(1, app_id)).front(), icon) << app_id;
+    for (const auto& [app_id, icons] : expected) {
+        const auto candidates = icon_candidates(make(1, app_id));
+        ASSERT_GE(candidates.size(), icons.size()) << app_id;
+        EXPECT_TRUE(std::equal(icons.begin(), icons.end(), candidates.begin())) << app_id;
+    }
+}
+
+TEST(AncsIcons, EveryBundledNameHasAnIconFile) {
+    const char* app_ids[] = {
+        "com.atebits.Tweetie2",
+        "com.burbn.instagram",
+        "com.facebook.Facebook",
+        "com.github.github",
+        "com.github.stormbreaker.prod",
+        "com.google.Gmail",
+        "com.google.ios.youtube",
+        "com.hammerandchisel.discord",
+        "com.instructure.icanvas",
+        "com.reddit.Reddit",
+        "com.spotify.client",
+        "com.toyopagroup.picaboo",
+        "com.zhiliaoapp.musically",
+        "net.whatsapp.WhatsApp",
+        "org.telegram.messenger",
+        "org.whispersystems.signal",
+    };
+    const std::filesystem::path dir = TETHER_NOTIFICATION_ICONS_DIR;
+
+    for (const char* app_id : app_ids) {
+        const auto candidates = icon_candidates(make(1, app_id));
+        const auto bundled = std::find_if(
+            candidates.begin(), candidates.end(), [](const std::string& n) { return n.rfind("tether-app-", 0) == 0; });
+        ASSERT_NE(bundled, candidates.end()) << app_id;
+        EXPECT_TRUE(std::filesystem::exists(dir / (*bundled + ".svg"))) << *bundled;
     }
 }
 

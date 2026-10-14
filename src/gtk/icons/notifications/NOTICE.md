@@ -22,9 +22,4 @@ Pinned Simple Icons revision: `dc7b10662a0a2cfdfc9305e2a2b06c023c30724a`.
 | X | https://about.x.com/en/who-we-are/brand-toolkit |
 | YouTube | https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors |
 
-Microsoft Teams and Outlook use the unmodified Microsoft Fluent brand SVGs from the official Microsoft 365 CDN (`fabric-cdn-prod_20240411.001`):
-
-- Teams: https://res-2-sdf.cdn.office.net/files/fabric-cdn-prod_20240411.001/assets/brand-icons/product/svg/teams_32x1.svg
-- Outlook: https://res-2-sdf.cdn.office.net/files/fabric-cdn-prod_20240411.001/assets/brand-icons/product/svg/outlook_32x1.svg
-
-The generic Mail and Messages app IDs use standard GTK icon-theme names instead of bundled brand art. Product names and marks remain the property of their respective owners.
+Files are installed as `tether-app-<name>.svg` so they never shadow an installed app's own icon. Product names and marks remain the property of their respective owners.
