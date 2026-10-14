@@ -144,49 +144,63 @@ namespace tether::bluetooth::ancs {
     std::vector<std::string> icon_candidates(const Notification& notification) {
         std::vector<std::string> out;
 
-        // Brand logos, named the way icon themes that carry them do (Papirus is
-        // the common one; Breeze and Adwaita ship none of these, which is why
-        // the category names below have to stand on their own).
-        static const std::map<std::string, const char*> by_app_id{
-            {"com.amazon.Amazon", "amazon"},
-            {"com.apple.MobileAddressBook", "x-office-address-book"},
-            {"com.apple.MobileSMS", "internet-chat"},
-            {"com.apple.Music", "multimedia-player"},
-            {"com.apple.facetime", "camera-web"},
-            {"com.apple.mobilecal", "office-calendar"},
-            {"com.apple.mobilemail", "mail-unread"},
-            {"com.apple.mobilenotes", "accessories-text-editor"},
-            {"com.apple.mobilephone", "call-start"},
-            {"com.apple.mobileslideshow", "multimedia-photo-viewer"},
-            {"com.apple.news", "application-rss+xml"},
-            {"com.apple.podcasts", "podcasts"},
-            {"com.apple.reminders", "view-task"},
-            {"com.atebits.Tweetie2", "twitter"},
-            {"com.burbn.instagram", "instagram"},
-            {"com.facebook.Facebook", "facebook"},
-            {"com.facebook.Messenger", "messenger"},
-            {"com.github.stormbreaker.prod", "github"},
-            {"com.google.Gmail", "gmail"},
-            {"com.google.Maps", "google-maps"},
-            {"com.google.ios.youtube", "youtube"},
-            {"com.hammerandchisel.discord", "discord"},
-            {"com.linkedin.LinkedIn", "linkedin"},
-            {"com.microsoft.Office.Outlook", "ms-outlook"},
-            {"com.reddit.Reddit", "reddit"},
-            {"com.spotify.client", "spotify"},
-            {"com.tinyspeck.chatlyio", "slack"},
-            {"com.toyopagroup.picaboo", "snapchat"},
-            {"com.ubercab.UberClient", "uber"},
-            {"com.zhiliaoapp.musically", "tiktok"},
-            {"net.whatsapp.WhatsApp", "whatsapp"},
-            {"org.telegram.messenger", "telegram"},
-            {"org.whispersystems.signal", "signal-desktop"},
-            {"ph.telegra.Telegraph", "telegram"},
-            {"us.zoom.videomeetings", "zoom"},
+        // Theme names come first so a theme that carries brand logos (Papirus is
+        // the common one) restyles them. Tether's bundled art is namespaced
+        // tether-app-* so it never shadows a real app's launcher icon in hicolor.
+        struct AppIcon {
+            const char* theme;
+            const char* bundled = nullptr;
+        };
+        static const std::map<std::string, AppIcon> by_app_id{
+            {"com.amazon.Amazon", {"amazon"}},
+            {"com.apple.MobileAddressBook", {"x-office-address-book"}},
+            {"com.apple.MobileSMS", {"internet-chat"}},
+            {"com.apple.Music", {"multimedia-player"}},
+            {"com.apple.facetime", {"camera-web"}},
+            {"com.apple.mobilecal", {"office-calendar"}},
+            {"com.apple.mobilemail", {"mail-unread"}},
+            {"com.apple.mobilenotes", {"accessories-text-editor"}},
+            {"com.apple.mobilephone", {"call-start"}},
+            {"com.apple.mobileslideshow", {"multimedia-photo-viewer"}},
+            {"com.apple.news", {"application-rss+xml"}},
+            {"com.apple.podcasts", {"podcasts"}},
+            {"com.apple.reminders", {"view-task"}},
+            {"com.atebits.Tweetie2", {"twitter", "tether-app-x"}},
+            {"com.burbn.instagram", {"instagram", "tether-app-instagram"}},
+            {"com.facebook.Facebook", {"facebook", "tether-app-facebook"}},
+            {"com.facebook.Messenger", {"messenger"}},
+            {"com.github.github", {"github", "tether-app-github"}},
+            {"com.github.stormbreaker.prod", {"github", "tether-app-github"}},
+            {"com.google.Gmail", {"gmail", "tether-app-gmail"}},
+            {"com.google.Maps", {"google-maps"}},
+            {"com.google.ios.youtube", {"youtube", "tether-app-youtube"}},
+            {"com.hammerandchisel.discord", {"discord", "tether-app-discord"}},
+            {"com.linkedin.LinkedIn", {"linkedin"}},
+            {"com.instructure.ios.CanvasParent", {nullptr, "tether-app-canvas"}},
+            {"com.instructure.ios.CanvasStudent", {nullptr, "tether-app-canvas"}},
+            {"com.instructure.ios.CanvasTeacher", {nullptr, "tether-app-canvas"}},
+            {"com.instructure.icanvas", {nullptr, "tether-app-canvas"}},
+            {"com.microsoft.Office.Outlook", {"ms-outlook"}},
+            {"com.reddit.Reddit", {"reddit", "tether-app-reddit"}},
+            {"com.spotify.client", {"spotify", "tether-app-spotify"}},
+            {"com.tinyspeck.chatlyio", {"slack"}},
+            {"com.toyopagroup.picaboo", {"snapchat", "tether-app-snapchat"}},
+            {"com.ubercab.UberClient", {"uber"}},
+            {"com.zhiliaoapp.musically", {"tiktok", "tether-app-tiktok"}},
+            {"net.whatsapp.WhatsApp", {"whatsapp", "tether-app-whatsapp"}},
+            {"org.telegram.messenger", {"telegram", "tether-app-telegram"}},
+            {"org.whispersystems.signal", {"signal-desktop", "tether-app-signal"}},
+            {"ph.telegra.Telegraph", {"telegram", "tether-app-telegram"}},
+            {"us.zoom.videomeetings", {"zoom"}},
         };
 
-        if (auto found = by_app_id.find(notification.app_id); found != by_app_id.end())
-            out.emplace_back(found->second);
+        // "canvas" is too generic a theme name to trust, so Canvas has no theme entry.
+        if (auto found = by_app_id.find(notification.app_id); found != by_app_id.end()) {
+            if (found->second.theme)
+                out.emplace_back(found->second.theme);
+            if (found->second.bundled)
+                out.emplace_back(found->second.bundled);
+        }
 
         for (const char* name : category_icons(notification.category))
             out.emplace_back(name);

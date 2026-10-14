@@ -46,6 +46,9 @@ target_link_libraries(tether_test PRIVATE
     tether
     GTest::gtest_main
 )
+target_compile_definitions(tether_test PRIVATE
+    TETHER_NOTIFICATION_ICONS_DIR="${CMAKE_SOURCE_DIR}/src/gtk/icons/notifications"
+)
 
 include(GoogleTest)
 gtest_discover_tests(tether_test)
