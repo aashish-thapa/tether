@@ -1404,7 +1404,7 @@ int main(int argc, char** argv) {
 
     // Logs would scribble over the screen.
     if (!std::getenv("TETHER_TUI_STDERR"))
-        std::freopen("/dev/null", "w", stderr);
+        (void)!std::freopen("/dev/null", "w", stderr);
 
     std::signal(SIGPIPE, SIG_IGN);
     for (int sig : {SIGTERM, SIGHUP}) {
