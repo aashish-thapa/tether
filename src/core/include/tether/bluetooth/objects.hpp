@@ -197,6 +197,8 @@ namespace tether::bluetooth {
         bool bond_carries_ancs = false;
         bool secure_connections = false;
         bool secure_connections_known = false;
+        // bluetooth.disable_ertm is set; obexd's L2CAP connects fail and MAP/PBAP report no_record
+        bool ertm_disabled = false;
         // Adapter the steps below apply to, e.g. "hci0". The class unit is templated on it.
         std::string adapter_id;
         // Human-readable explanations for anything short of full mode, shown verbatim
@@ -225,7 +227,11 @@ namespace tether::bluetooth {
 
     Capability resolve_capability(const BluezObjects& objects,
                                   std::optional<bool> secure_connections = std::nullopt,
-                                  const std::string& preferred_id = {});
+                                  const std::string& preferred_id = {},
+                                  bool ertm_disabled = false);
+
+    // Reads /sys/module/bluetooth/parameters/disable_ertm. False when unreadable.
+    bool l2cap_ertm_disabled();
 
     // Shell commands for the two setup steps, for a machine booted with or without systemd.
     std::string enable_experimental_command(bool systemd);

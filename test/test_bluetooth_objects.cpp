@@ -281,6 +281,19 @@ TEST(Capability, FullModeWhenBearerConfirmed) {
     EXPECT_TRUE(cap.setup.empty());
 }
 
+TEST(Capability, DisabledErtmIsASetupStep) {
+    Payload p(join(ADAPTER_FULL, IPHONE_BONDED).c_str());
+    const auto objects = parse_managed_objects(p.v);
+
+    EXPECT_TRUE(resolve_capability(objects).setup.empty());
+
+    const auto cap = resolve_capability(objects, std::nullopt, {}, true);
+    EXPECT_TRUE(cap.ertm_disabled);
+    EXPECT_EQ(cap.mode, DeliveryMode::Full);
+    ASSERT_EQ(cap.setup.size(), 1u);
+    EXPECT_NE(cap.setup[0].command.find("disable_ertm"), std::string::npos);
+}
+
 TEST(Capability, SecureConnectionsStateIsInjectedRatherThanReadDuringResolution) {
     Payload p(join(ADAPTER_FULL, IPHONE_BONDED).c_str());
     const auto objects = parse_managed_objects(p.v);

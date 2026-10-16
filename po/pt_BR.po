@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-10 13:51-0700\n"
+"POT-Creation-Date: 2026-10-15 19:09-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1389,6 +1389,14 @@ msgstr ""
 "O iPhone não oferecerá suas permissões de Mensagens e Contatos enquanto este "
 "adaptador não se apresentar como A/V Hands-Free (major 4, minor 8)."
 
+#: src/core/src/bluetooth/objects.cpp
+msgid ""
+"Messages and Contacts need L2CAP ERTM, which the kernel has disabled "
+"(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
+"remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
+"ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr "Mensagens e Contatos precisam do L2CAP ERTM, que o kernel desativou (bluetooth.disable_ertm). Isto o reativa até a próxima reinicialização. Para manter, remova disable_ertm da linha de comando do kernel ou de /etc/modprobe.d (rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
 msgstr "Nenhum adaptador Bluetooth está disponível."
@@ -1570,6 +1578,15 @@ msgid ""
 msgstr ""
 "{0} está indisponível porque outro computador está usando a sessão {1} do "
 "iPhone. Desconecte-o lá e este vai conectar sozinho."
+
+#. TRANSLATORS: {} is Messages or Contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid ""
+"{} cannot connect because the kernel has L2CAP ERTM disabled "
+"(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
+"iPhone."
+msgstr "{} não consegue conectar porque o kernel está com L2CAP ERTM desativado (bluetooth.disable_ertm). Execute tether --bt-setup; não há nada de errado no iPhone."
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp

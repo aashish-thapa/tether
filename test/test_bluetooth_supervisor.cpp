@@ -562,6 +562,15 @@ TEST(ObexErrors, ServiceRecordMissingIsNotAPermissionProblem) {
     EXPECT_NE(advice.find("re-pairing is not the fix"), std::string::npos);
 }
 
+// With bluetooth.disable_ertm set, obexd's L2CAP connect fails locally and is
+// reported as a missing record; blaming the phone toggle sends the user nowhere.
+TEST(ObexErrors, DisabledErtmIsNamedInsteadOfThePhone) {
+    const std::string advice = obex_error_advice(ObexError::NoRecord, "pbap", true);
+    EXPECT_NE(advice.find("disable_ertm"), std::string::npos);
+    EXPECT_EQ(advice.find("Sync Contacts"), std::string::npos);
+    EXPECT_EQ(advice.find("another computer"), std::string::npos);
+}
+
 TEST(ObexErrors, ClassifiesUnavailableAndOther) {
     EXPECT_EQ(classify_obex_error("Host is down"), ObexError::Unavailable);
     EXPECT_EQ(classify_obex_error("Page Timeout"), ObexError::Unavailable);

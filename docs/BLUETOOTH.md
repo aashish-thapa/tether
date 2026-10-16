@@ -932,6 +932,7 @@ checks the daemon does not make.
 | `tether-btclass@hci0` fails with `Invalid Index`, having worked for months | The controller re-enumerated -- a failed firmware handshake resets it over USB and it comes back as `hci1` -- so the instance name points at an adapter that no longer exists | Update the unit -- it resolves the adapter itself now and the instance name is only a hint, see 2026-09-11 below. By hand, `ls /sys/class/bluetooth` names the live adapter |
 | `tether --bt-setup` keeps printing the experimental step after the drop-in was applied and `bluetooth` restarted | Before 0.2.35 the check read `/proc`, which a Flatpak sandbox cannot see, and which `main.conf` `Experimental = true` never touches | Update. Confirm the flag itself with `busctl --system introspect org.bluez /org/bluez/hci0 \| grep AdvertisementMonitor` -- a hit means the experimental API is on, see 2026-09-20 below |
 | Messages and contacts worked, then stopped, and the error mentions a service record | `bluetoothd` restarted and reset the Class of Device | `sudo systemctl enable --now tether-btclass@hci0`, then re-pair if the phone dropped the bond |
+| MAP and PBAP both stuck on `no_record` with the class right, and the `obex` journal shows `setsockopt(L2CAP_OPTIONS): Invalid argument (22)` before each `Unable to find service record` | The kernel has L2CAP ERTM disabled (`bluetooth.disable_ertm=1`, common on gaming distros as an old Xbox controller workaround). obexd connects over L2CAP in ERTM mode and reports the refusal as a missing record | `tether --bt-setup` prints `echo N \| sudo tee /sys/module/bluetooth/parameters/disable_ertm`, which lasts until reboot. To keep it, remove `disable_ertm` from the kernel command line or `/etc/modprobe.d` (rpm-ostree: `sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1`). See 2026-10-15 below |
 | The phone never offers notifications / Sync Contacts | The class is wrong, or the ANCS advertisement is not running | Check for `class=ok` in `tether --bt-status`, can take minutes |
 | MAP or PBAP reports `forbidden` | The matching toggle on the phone is off | Turn it on. This is not a pairing failure |
 | Contacts shows no favorites | **Phone Favorites** is off under the iPhone's Bluetooth settings for this computer | Turn it on, then reconnect the phone |
@@ -3671,3 +3672,30 @@ none, and the check moves to `Adapter1.ConnectDevice`, which is `GDBUS_EXPERIMEN
 and therefore absent from introspection without the flag.
 
 Not verified here: the negative case, which needs `bluetoothd` restarted without the flag.
+
+### 2026-10-15 - `no_record` on Bazzite was the kernel refusing ERTM (#243)
+
+Two Bazzite users (#243, discussion #250) had a dual bond, `class=ok` and live ANCS, yet MAP and
+PBAP stayed on `no_record`, and the toggles never showed up. Re-pairing with the class right
+changed nothing. The `obex` journal had the same pair of lines on every attempt:
+
+```
+obexd: setsockopt(L2CAP_OPTIONS): Invalid argument (22)
+obexd: Unable to find service record
+```
+
+The SDP fetch succeeded. In `obexd/client/bluetooth.c` (5.87), `search_callback()` takes the PSM
+from the record's GoepL2capPsm (0x0200) over the RFCOMM channel, and `transport_connect()` opens
+L2CAP with `BT_IO_MODE_ERTM`. The kernel's `L2CAP_OPTIONS` handler (`net/bluetooth/l2cap_sock.c`,
+`l2cap_sock_setsockopt_old`) returns `-EINVAL` for ERTM when `disable_ertm` is set. The connect
+fails locally, before the phone is asked anything, and obexd's shared `failed:` label reports it
+as "Unable to find service record". In #250 `bluetooth.disable_ertm=1` came from the kernel command
+line.
+
+`echo N | sudo tee /sys/module/bluetooth/parameters/disable_ertm` (the parameter is `0644`) took
+PBAP to open and MAP to `forbidden` in #250. Since obexd's error text cannot tell the two causes
+apart, the resolver reads the parameter itself: a setup step in `--bt-setup` and `--bt-status`,
+`ertm_disabled` in `--bt-diagnostics`, and the `no_record` advice names ERTM in place of the
+phone. `bt-probe.sh` checks it too.
+
+Not verified: whether the toggles show up after the fix with no re-pair.

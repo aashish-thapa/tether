@@ -35,8 +35,9 @@ namespace tether::bluetooth {
     // classification can be pinned down by tests against real message text.
     ObexError classify_obex_error(const std::string& message);
 
-    // Advice for the user, phrased so it can be shown verbatim.
-    std::string obex_error_advice(ObexError error, const std::string& profile);
+    // Advice for the user, phrased so it can be shown verbatim. `ertm_disabled`
+    // names the local cause of a NoRecord that would otherwise blame the phone.
+    std::string obex_error_advice(ObexError error, const std::string& profile, bool ertm_disabled = false);
 
     // Session operations on obexd.
     class ProfileOps {
