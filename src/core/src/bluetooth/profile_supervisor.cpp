@@ -1,4 +1,5 @@
 #include "tether/bluetooth/profile_supervisor.hpp"
+#include "tether/bluetooth/objects.hpp"
 #include "tether/log.hpp"
 #include <tether/i18n.hpp>
 
@@ -70,7 +71,7 @@ namespace tether::bluetooth {
         return ObexError::Other;
     }
 
-    std::string obex_error_advice(ObexError error, const std::string& profile) {
+    std::string obex_error_advice(ObexError error, const std::string& profile, bool ertm_disabled) {
         const bool map = profile == "map";
         // TRANSLATORS: the feature name Tether shows for this profile.
         const std::string label = map ? _("Messages") : _("Contacts");
@@ -91,6 +92,12 @@ namespace tether::bluetooth {
                              label,
                              profile);
         case ObexError::NoRecord:
+            // obexd reports its own failed ERTM connect as a missing record too
+            if (ertm_disabled)
+                // TRANSLATORS: {} is Messages or Contacts.
+                return tr_format(_("{} cannot connect because the kernel has L2CAP ERTM disabled "
+                                   "(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the iPhone."),
+                                 label);
             // obexd reports a missing record whenever its SDP fetch is refused, so the real cause is usually one layer
             // down.
             // TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
@@ -201,9 +208,9 @@ namespace tether::bluetooth {
             status_.reason = _("Messages and contacts are connected.");
         } else if (!status_.map_open && status_.map_error != ObexError::None) {
             // MAP is the feature people notice, so its problem leads.
-            status_.reason = obex_error_advice(status_.map_error, "map");
+            status_.reason = obex_error_advice(status_.map_error, "map", l2cap_ertm_disabled());
         } else if (!status_.pbap_open && status_.pbap_error != ObexError::None) {
-            status_.reason = obex_error_advice(status_.pbap_error, "pbap");
+            status_.reason = obex_error_advice(status_.pbap_error, "pbap", l2cap_ertm_disabled());
         } else {
             status_.reason = _("Opening messages and contacts...");
         }

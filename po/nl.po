@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-10 13:51-0700\n"
+"POT-Creation-Date: 2026-10-15 19:09-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Dutch\n"
@@ -1389,6 +1389,14 @@ msgstr ""
 "De iPhone biedt zijn machtigingen voor Berichten en Contacten pas aan als "
 "deze adapter zich voordoet als A/V Hands-Free (major 4, minor 8)."
 
+#: src/core/src/bluetooth/objects.cpp
+msgid ""
+"Messages and Contacts need L2CAP ERTM, which the kernel has disabled "
+"(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
+"remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
+"ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr "Berichten en Contacten hebben L2CAP ERTM nodig, dat de kernel heeft uitgeschakeld (bluetooth.disable_ertm). Dit zet het weer aan tot de volgende herstart. Om het te behouden: verwijder disable_ertm van de kernel-opdrachtregel of uit /etc/modprobe.d (rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
 msgstr "Er is geen Bluetooth-adapter beschikbaar."
@@ -1570,6 +1578,15 @@ msgid ""
 msgstr ""
 "{0} is niet beschikbaar omdat een andere computer de {1}-sessie van de "
 "iPhone gebruikt. Verbreek die daar, dan verbindt dit vanzelf."
+
+#. TRANSLATORS: {} is Messages or Contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid ""
+"{} cannot connect because the kernel has L2CAP ERTM disabled "
+"(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
+"iPhone."
+msgstr "{} kan geen verbinding maken omdat de kernel L2CAP ERTM heeft uitgeschakeld (bluetooth.disable_ertm). Voer tether --bt-setup uit; er is niets mis met de iPhone."
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp

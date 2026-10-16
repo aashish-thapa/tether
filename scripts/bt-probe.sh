@@ -275,6 +275,16 @@ else
     note "It is socket-activated; 'systemctl --user start obex' forces it up."
 fi
 
+# obexd opens MAP and PBAP over L2CAP in ERTM mode; with ERTM disabled the
+# kernel refuses it and obexd reports "Unable to find service record".
+if [[ $(cat /sys/module/bluetooth/parameters/disable_ertm 2>/dev/null) == [Y1] ]]; then
+    warn "kernel has L2CAP ERTM disabled — MAP and PBAP will fail with no_record"
+    note "Fix for this boot: echo N | sudo tee /sys/module/bluetooth/parameters/disable_ertm"
+    note "Persist: remove disable_ertm from the kernel command line or /etc/modprobe.d"
+else
+    ok "L2CAP ERTM enabled"
+fi
+
 # --- verdict -------------------------------------------------------------
 echo
 echo "Verdict"

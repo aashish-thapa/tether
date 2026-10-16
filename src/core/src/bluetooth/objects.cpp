@@ -538,8 +538,10 @@ namespace tether::bluetooth {
 
     Capability resolve_capability(const BluezObjects& objects,
                                   std::optional<bool> secure_connections,
-                                  const std::string& preferred_id) {
+                                  const std::string& preferred_id,
+                                  bool ertm_disabled) {
         Capability cap;
+        cap.ertm_disabled = ertm_disabled;
 
         const Adapter* adapter = preferred_adapter(objects, preferred_id);
 
@@ -639,8 +641,22 @@ namespace tether::bluetooth {
                                    "adapter presents itself as A/V Hands-Free (major 4, minor 8)."),
                                  set_class_command(cap.adapter_id, systemd_booted())});
         }
+        if (cap.ertm_disabled) {
+            // obexd opens MAP and PBAP over L2CAP in ERTM mode, which the kernel refuses with EINVAL here
+            cap.setup.push_back({_("Messages and Contacts need L2CAP ERTM, which the kernel has disabled "
+                                   "(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, remove "
+                                   "disable_ertm from the kernel command line or /etc/modprobe.d "
+                                   "(rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."),
+                                 "echo N | sudo tee /sys/module/bluetooth/parameters/disable_ertm"});
+        }
 
         return cap;
+    }
+
+    bool l2cap_ertm_disabled() {
+        std::ifstream in("/sys/module/bluetooth/parameters/disable_ertm");
+        char value = 'N';
+        return in >> value && (value == 'Y' || value == '1');
     }
 
     nlohmann::json to_json(const Adapter& a) {
@@ -712,6 +728,7 @@ namespace tether::bluetooth {
             {"bond_carries_ancs", c.bond_carries_ancs},
             {"secure_connections",
              c.secure_connections_known ? nlohmann::json(c.secure_connections) : nlohmann::json(nullptr)},
+            {"ertm_disabled", c.ertm_disabled},
             {"adapter_id", c.adapter_id},
             {"reasons", c.reasons},
             {"setup", setup},

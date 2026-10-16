@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: tether 0.2.36\n"
+"Project-Id-Version: tether 0.2.38\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-10 13:51-0700\n"
+"POT-Creation-Date: 2026-10-15 19:09-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1235,6 +1235,14 @@ msgid ""
 "adapter presents itself as A/V Hands-Free (major 4, minor 8)."
 msgstr ""
 
+#: src/core/src/bluetooth/objects.cpp
+msgid ""
+"Messages and Contacts need L2CAP ERTM, which the kernel has disabled "
+"(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
+"remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
+"ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr ""
+
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
 msgstr ""
@@ -1392,6 +1400,15 @@ msgstr ""
 msgid ""
 "{0} is unavailable because another computer is using the iPhone's {1} "
 "session. Disconnect it there, then this will connect on its own."
+msgstr ""
+
+#. TRANSLATORS: {} is Messages or Contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid ""
+"{} cannot connect because the kernel has L2CAP ERTM disabled "
+"(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
+"iPhone."
 msgstr ""
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.

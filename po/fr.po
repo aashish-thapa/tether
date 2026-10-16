@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-10 13:51-0700\n"
+"POT-Creation-Date: 2026-10-15 19:09-0700\n"
 "PO-Revision-Date: 2026-08-22\n"
 "Last-Translator: Tether project\n"
 "Language-Team: French\n"
@@ -1401,6 +1401,14 @@ msgstr ""
 "L'iPhone ne proposera ses autorisations Messages et Contacts que lorsque cet "
 "adaptateur se présentera comme mains libres A/V (majeur 4, mineur 8)."
 
+#: src/core/src/bluetooth/objects.cpp
+msgid ""
+"Messages and Contacts need L2CAP ERTM, which the kernel has disabled "
+"(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
+"remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
+"ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr "Messages et Contacts ont besoin de L2CAP ERTM, que le noyau a désactivé (bluetooth.disable_ertm). Ceci le réactive jusqu'au prochain redémarrage. Pour le conserver, retirez disable_ertm de la ligne de commande du noyau ou de /etc/modprobe.d (rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
 msgstr "Aucun adaptateur Bluetooth n'est disponible."
@@ -1583,6 +1591,15 @@ msgid ""
 msgstr ""
 "{0} est indisponible car un autre ordinateur utilise la session {1} de "
 "l'iPhone. Déconnectez-le là-bas, et la connexion se fera d'elle-même."
+
+#. TRANSLATORS: {} is Messages or Contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid ""
+"{} cannot connect because the kernel has L2CAP ERTM disabled "
+"(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
+"iPhone."
+msgstr "{} ne peut pas se connecter car le noyau a désactivé L2CAP ERTM (bluetooth.disable_ertm). Lancez tether --bt-setup ; rien ne cloche sur l'iPhone."
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp

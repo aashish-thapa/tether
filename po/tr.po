@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-10 13:51-0700\n"
+"POT-Creation-Date: 2026-10-15 19:09-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Turkish\n"
@@ -1374,6 +1374,14 @@ msgstr ""
 "Bu bağdaştırıcı kendini A/V Hands-Free (major 4, minor 8) olarak "
 "tanıtmadıkça iPhone Mesajlar ve Kişiler izinlerini sunmayacak."
 
+#: src/core/src/bluetooth/objects.cpp
+msgid ""
+"Messages and Contacts need L2CAP ERTM, which the kernel has disabled "
+"(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
+"remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
+"ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr "Mesajlar ve Kişiler için L2CAP ERTM gerekir, ancak çekirdek bunu devre dışı bırakmış (bluetooth.disable_ertm). Bu komut onu bir sonraki yeniden başlatmaya kadar tekrar açar. Kalıcı yapmak için disable_ertm'yi çekirdek komut satırından veya /etc/modprobe.d'den kaldırın (rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
 msgstr "Kullanılabilir Bluetooth bağdaştırıcısı yok."
@@ -1555,6 +1563,15 @@ msgid ""
 msgstr ""
 "{0} kullanılamıyor; çünkü iPhone'un {1} oturumunu başka bir bilgisayar "
 "kullanıyor. Bağlantıyı orada kesin, sonra bu kendiliğinden bağlanacak."
+
+#. TRANSLATORS: {} is Messages or Contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid ""
+"{} cannot connect because the kernel has L2CAP ERTM disabled "
+"(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
+"iPhone."
+msgstr "Çekirdekte L2CAP ERTM devre dışı olduğu için (bluetooth.disable_ertm) {} bağlanamıyor. tether --bt-setup komutunu çalıştırın; iPhone'da bir sorun yok."
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp

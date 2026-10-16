@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-10 13:51-0700\n"
+"POT-Creation-Date: 2026-10-15 19:09-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Simplified Chinese\n"
@@ -1315,6 +1315,14 @@ msgstr ""
 "在此适配器将自己标识为 A/V Hands-Free（major 4, minor 8）之前，iPhone 不会提"
 "供信息和通讯录权限。"
 
+#: src/core/src/bluetooth/objects.cpp
+msgid ""
+"Messages and Contacts need L2CAP ERTM, which the kernel has disabled "
+"(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
+"remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
+"ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr "信息和通讯录需要 L2CAP ERTM，但内核已将其禁用 (bluetooth.disable_ertm)。此命令会在下次重启前重新启用它。如需永久生效，请从内核命令行或 /etc/modprobe.d 中移除 disable_ertm (rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)。"
+
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
 msgstr "没有可用的蓝牙适配器。"
@@ -1491,6 +1499,15 @@ msgid ""
 msgstr ""
 "{0} 不可用，因为另一台电脑正在使用 iPhone 的 {1} 会话。在那边断开连接后，这里"
 "会自动连接。"
+
+#. TRANSLATORS: {} is Messages or Contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid ""
+"{} cannot connect because the kernel has L2CAP ERTM disabled "
+"(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
+"iPhone."
+msgstr "{}无法连接，因为内核禁用了 L2CAP ERTM (bluetooth.disable_ertm)。请运行 tether --bt-setup；iPhone 端没有问题。"
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp
