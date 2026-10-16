@@ -23,4 +23,7 @@ public enum SharePayload: Sendable {
 
     /// Send binary data as a file transfer (`file_start` / `file_chunk` / `file_end`).
     case file(Data, filename: String)
+
+    /// Set the Linux clipboard to a PNG image.
+    case clipboardImage(Data)
 }

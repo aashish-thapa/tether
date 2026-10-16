@@ -23,6 +23,7 @@ public enum ShareSenderError: LocalizedError {
     case connectionFailed(String)
     case timeout
     case fileTransferFailed(String)
+    case clipboardImageUnsupported
 
     public var errorDescription: String? {
         switch self {
@@ -38,6 +39,8 @@ public enum ShareSenderError: LocalizedError {
             return "Connection timed out. Make sure tetherd is running on your desktop."
         case .fileTransferFailed(let msg):
             return "File transfer failed: \(msg)"
+        case .clipboardImageUnsupported:
+            return "Update Tether on your computer to copy images."
         }
     }
 }
@@ -95,6 +98,16 @@ public actor ShareSender {
 
         case .file(let data, let filename):
             sendResult = await sendFile(data: data, filename: filename, via: connection)
+
+        case .clipboardImage(let png):
+            // An old daemon would save the image to Downloads instead.
+            if !(await daemonSupportsClipboardImages(via: connection)) {
+                sendResult = .failure(ShareSenderError.clipboardImageUnsupported)
+            } else if png.count > 32 * 1024 * 1024 { // same cap the daemon enforces
+                sendResult = .failure(ShareSenderError.fileTransferFailed("Image is too large (32 MB max)."))
+            } else {
+                sendResult = await sendFile(data: png, filename: "clipboard.png", clipboard: "set", via: connection)
+            }
         }
 
         connection.disconnect()
@@ -214,9 +227,33 @@ public actor ShareSender {
 
     // MARK: - Private — File Transfer
 
+    /// Whether the daemon answers `hello` with `clipboard_image`. Old daemons
+    /// reply "OK", which never decodes as `hello`, so they time out to false.
+    private static func daemonSupportsClipboardImages(via connection: TetherConnection) async -> Bool {
+        await withCheckedContinuation { continuation in
+            var resumed = false
+
+            connection.onMessage = { message in
+                guard !resumed, message.parsedCommand == .hello else { return }
+                resumed = true
+                continuation.resume(returning: message.features?.contains("clipboard_image") ?? false)
+            }
+            connection.send(.hello(features: ["clipboard_image"]))
+
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                if !resumed {
+                    resumed = true
+                    continuation.resume(returning: false)
+                }
+            }
+        }
+    }
+
     private static func sendFile(
         data fileData: Data,
         filename: String,
+        clipboard: String? = nil,
         via connection: TetherConnection
     ) async -> Result<Void, Error> {
         let transferId = UUID().uuidString
@@ -244,7 +281,7 @@ public actor ShareSender {
             }
 
             // Send file_start
-            connection.send(.fileStart(filename: filename, size: totalSize, transferId: transferId))
+            connection.send(.fileStart(filename: filename, size: totalSize, transferId: transferId, clipboard: clipboard))
 
             // Stream chunks
             Task {
