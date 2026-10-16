@@ -8,7 +8,8 @@
 //  a SwiftUI sheet with only the routes applicable to that content:
 //
 //    • Text (single item)  → 📋 Send to Clipboard  |  🔑 Send as OTP
-//    • Image/Video/Contact/Audio/File (single item) → 📁 Send as File
+//    • Image (single item) → 📋 Copy to Clipboard  |  📁 Send as File
+//    • Video/Contact/Audio/File (single item) → 📁 Send as File
 //    • Multiple items (Photos multi-select, etc.)   → 📁 Send N Files
 //
 //  Every attachment on every input item is resolved (not just the first),
@@ -360,6 +361,22 @@ private struct ShareSheetView: View {
             }
 
         case .file(let data, let filename):
+            if UTType(filenameExtension: (filename as NSString).pathExtension)?.conforms(to: .image) == true {
+                ActionButton(
+                    icon: "clipboard",
+                    label: "Copy to Clipboard",
+                    subtitle: "Paste the image on your desktop",
+                    color: .cyan
+                ) {
+                    // The daemon only takes PNG; this also converts JPEG/HEIC.
+                    if let png = UIImage(data: data)?.pngData() {
+                        perform(.clipboardImage(png))
+                    } else {
+                        resultMessage = "Couldn't read this image."
+                        didFail = true
+                    }
+                }
+            }
             ActionButton(
                 icon: "arrow.up.doc.fill",
                 label: "Send as File",
@@ -535,6 +552,7 @@ private struct ShareSheetView: View {
         case .openUrl: return "Opened on desktop ✓"
         case .otp: return "OTP stored in vault ✓"
         case .file(_, let name): return "\(name) sent ✓"
+        case .clipboardImage: return "Copied to clipboard ✓"
         }
     }
 
