@@ -21,6 +21,8 @@
 
 ![The Tether desktop app's Messages view: a conversation list on the left and an open conversation with sent and received messages on the right](docs/img/messages.webp)
 
+[![GitHub Trending Repository of the Day](https://api.star-history.com/badge?repo=zackb/tether&type=trending&theme=dark)](https://www.star-history.com/zackb/tether)
+
 ## Features
 
 | Feature | Status |
