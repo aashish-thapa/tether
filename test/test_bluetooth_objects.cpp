@@ -441,6 +441,43 @@ TEST(Capability, ClassicOnlyIphoneBondIsNamedAsSuch) {
     EXPECT_EQ(cap.mode, DeliveryMode::Full);
 }
 
+// #255: a dongle without BR/EDR Secure Connections still reads secure-conn on, and
+// every re-pair on it is BR/EDR-only. With another adapter present, name it.
+TEST(Capability, ClassicOnlyBondNamesAnotherAdapter) {
+    const std::string second = R"({
+      '/org/bluez/hci1': {
+        'org.bluez.Adapter1': { 'Address': <'02:00:00:00:00:03'>, 'Powered': <true> }
+      }
+    })";
+    Payload p(join(join(ADAPTER_FULL, second.c_str()).c_str(), R"({
+      '/org/bluez/hci0/dev_02_00_00_00_00_01': {
+        'org.bluez.Device1': {
+          'Paired': <true>,
+          'Bonded': <true>,
+          'UUIDs': <['00001132-0000-1000-8000-00805f9b34fb', '0000112f-0000-1000-8000-00805f9b34fb']>
+        }
+      }
+    })")
+                  .c_str());
+    auto objects = parse_managed_objects(p.v);
+    objects.experimental_api = true;
+
+    auto named = [](const Capability& cap) {
+        for (const auto& reason : cap.reasons)
+            if (reason.find("BR/EDR only") != std::string::npos)
+                return reason;
+        return std::string{};
+    };
+
+    const auto two = named(resolve_capability(objects, true, "hci0"));
+    EXPECT_NE(two.find("tether --bt-adapter hci1"), std::string::npos) << two;
+
+    objects.adapters.pop_back();
+    const auto one = named(resolve_capability(objects, true, "hci0"));
+    EXPECT_NE(one.find("Forget This Device"), std::string::npos) << one;
+    EXPECT_EQ(one.find("--bt-adapter"), std::string::npos) << "suggested an adapter that is not there";
+}
+
 // Bearer.LE1 carrying properties says the experimental API is live. It says
 // nothing about the bond, and reading it as "the bond has an LE half" reported
 // "Bond: BR/EDR + LE" for every bonded device on a machine running bluetoothd

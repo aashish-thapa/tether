@@ -950,7 +950,7 @@ checks the daemon does not make.
 | LE never connects and the log repeats `le-connection-abort-by-local` | Something on this side is cancelling the connection. Tether's own cause was a `PreferredBearer` write racing the async connect, fixed; anything else writing that property during a connect will do the same | Check no other Bluetooth tool is driving the same device. The phone is not the cause: `abort-by-local` means the local host cancelled |
 | Messages stopped after turning notification mirroring off | Fixed. The toggle used to restart supervision, which abandoned the MAP and PBAP sessions at obexd instead of removing them, and the iPhone serves one MAP session at a time | Nothing. Mirroring is switched in place now, and a dropped profile supervisor releases its sessions. On an older build, restart `tetherd` |
 | Notifications stopped and never came back, while messages and contacts kept working | Fixed. The bearer supervisor used to stop retrying LE after six attempts, and only a Classic drop or a daemon restart re-armed it | Nothing. The solicitation is kept on air whenever LE is down, which is what the iPhone answers -- see 2026-08-22 |
-| `tether --bt-status` reports `Bond: BR/EDR only` | The bond was made without cross-transport key derivation, so it has no LE half and can never carry ANCS | Forget this computer on the iPhone and pair again -- it can take more than one attempt, the derivation is flaky on identical inputs (2026-08-25). Check `secure-connections` in the same output first: re-pairing cannot help while it is off |
+| `tether --bt-status` reports `Bond: BR/EDR only` | The bond was made without cross-transport key derivation, so it has no LE half and can never carry ANCS | Forget this computer on the iPhone and pair again -- it can take more than one attempt, the derivation is flaky on identical inputs (2026-08-25). Check `secure-connections` in the same output first: re-pairing cannot help while it is off. `on` does not prove BR/EDR Secure Connections, though: a `LinkKey` `Type` of 4 or 5 in the bond's info file under `/var/lib/bluetooth` means the controller paired without it, and re-pairing on that controller cannot help -- use another with `tether --bt-adapter <hciN>`, see 2026-10-17 |
 | `tether --bt-status` reports `Bond: BR/EDR, notifications live` | BlueZ is too old for the bearer API (5.72 in #226), so it cannot show an LE half, but ANCS is subscribed and delivering | Nothing. The BR/EDR-only warning is held back while ANCS is live, and comes back while the phone is away |
 | Walked back into range and nothing reconnected for minutes | Fixed. The ANCS advert was gated on the Classic link, and the Classic backoff had no event that ended the absence | Nothing. The advert stays on air whenever LE is down, and an LE link coming up clears the Classic backoff -- see 2026-08-22 |
 | Startup logs `StartNotify not ready yet (InProgress)` for up to a minute | GATT discovery is still running on the new LE link | Nothing. It subscribes on its own. Only treat it as the 2026-08-19 hang if the LE link never comes up |
@@ -963,7 +963,7 @@ checks the daemon does not make.
 | Everything connects but `ancs_ready` stays false | Compatibility mode, or iOS has not authorized notification content yet | Check `Mode:` in `tether --bt-status`. In full mode the daemon retries, the first request returns `NotPermitted` until the prompt on the phone is approved |
 | A group conversation cannot be replied to | Working as designed until the route is unambiguous | The thread's `reply_reason` says which condition failed |
 | The iPhone never offers the "Show Notifications" toggle, and messages and contacts work | Fixed. A BR/EDR-only bond used to latch notification mirroring off in the config, which takes the ANCS solicitation off air -- so the phone is never asked for the service | Nothing. On an older build, `tether --bt-ancs on` then `tether --bt-solicit`; `tether --bt-status` now shows mirroring under `Notifications:` -- see 2026-09-01 |
-| Pairing bonds but the LE half never derives, on a machine with a USB dongle plugged in | Tether used the first powered controller, which is the dongle, not the built-in one | `tether --bt-status` marks the controller in use; `tether --bt-adapter <hciN>` picks another -- see 2026-09-01 |
+| Pairing bonds but the LE half never derives, on a machine with a USB dongle plugged in | Tether used the first powered controller, which is the dongle, not the built-in one | `tether --bt-status` marks the controller in use; `tether --bt-adapter <hciN>` picks another -- see 2026-09-01. A dongle that pairs with a P-192 link key can never derive it -- see 2026-10-17 |
 | The link reads down forever with `br-connection-unknown`, while messages, contacts and notifications all work | This computer offers the iPhone no BR/EDR profile to connect to, and BlueZ only reports a link up while some local profile is connected | Nothing. Tether no longer waits on that link -- see 2026-08-23 below. Call support does not change this: BlueZ's hands-free profile is not one of the local profiles BlueZ counts |
 | The iPhone's audio moves to the computer when Tether connects | The machine advertises itself as a Bluetooth speaker/headset, and iOS routes to it. Not caused by Tether beyond bringing the link up | See "Keeping the phone's audio on the phone" below |
 | After this computer takes the AirPods, the iPhone plays on the computer and needs the AirPods picked in Control Center | `a2dp_sink` makes the computer a speaker for the phone, and iOS falls back to the last one it had | See "Keeping the phone's audio on the phone" below |
@@ -3699,3 +3699,43 @@ apart, the resolver reads the parameter itself: a setup step in `--bt-setup` and
 phone. `bt-probe.sh` checks it too.
 
 Not verified: whether the toggles show up after the fix with no re-pair.
+
+### 2026-10-17 - A dongle paired with a P-192 link key, so the LE half could never derive (#255)
+
+| | |
+|---|---|
+| Controller | Realtek RTL8761BU USB dongle, `0bda:8771`, manufacturer 93, HCI version 10 (Core 5.1), as `hci1`; an onboard `hci0` is also present |
+| BlueZ | 5.87 (Fedora 43) |
+| Phone | iPhone 15 Pro Max |
+| Tether | 0.2.38, Flatpak |
+
+Every check passed: `class=ok`, `secure-connections=on`, both LE roles, an advert on air. Every
+re-pair still gave `Bond: BR/EDR only`. The reporter found the cause in the bond's info file:
+`LinkKey Type=5`.
+
+The `Type` is the HCI link key type. 4 and 5 are P-192 keys (legacy Secure Simple Pairing), 7 and 8
+are P-256 keys (BR/EDR Secure Connections). The 2026-08-19 capture shows the LE LTK derived from a
+P-256 link key. With a P-192 key the BR/EDR SMP exchange never runs, so the bond cannot get an LE
+half. Re-pairing on that controller cannot change this.
+
+**`secure-connections=on` does not prove BR/EDR Secure Connections.** It is the `secure-conn` bit
+from `btmgmt info`. In `net/bluetooth/mgmt.c`, `get_supported_settings()` offers it to any
+LE-capable controller. `set_secure_conn()` accepts it when LE is enabled. When `lmp_sc_capable()` is
+false, it only sets the host flag and sends nothing to the controller. A controller without the LMP
+Secure Connections feature reads `on` and pairs P-192 on BR/EDR. That feature bit is on page 2 of the
+LMP features, which takes root to read, so Tether does not probe it.
+
+To check a bond by hand:
+
+```
+sudo grep -A3 '\[LinkKey\]' /var/lib/bluetooth/<adapter address>/<phone address>/info
+```
+
+You can also capture a pairing with `sudo btmon`. A bond with no LE half has no
+`BR/EDR SMP: Pairing Request` after the `Link Key Notification`.
+
+The BR/EDR-only advice in `--bt-status` now names another adapter when one is present
+(`tether --bt-adapter <hciN>`). This is the same shape as #69 (CSR clone) and #128 (Barrot).
+
+Not verified: whether the dongle's firmware loaded (`rtl_bt/rtl8761bu_fw.bin`), and whether `hci0`
+produces a P-256 key and a dual bond for the reporter.

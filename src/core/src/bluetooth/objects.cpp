@@ -631,9 +631,22 @@ namespace tether::bluetooth {
                 reason += std::string(" ") +
                           _("Secure Connections is off on this controller, which is what blocks the derivation; "
                             "re-pairing will not help until it is on.");
-            else
+            else {
                 reason +=
                     std::string(" ") + _("Delete this computer on the iPhone (Forget This Device) and pair again.");
+                // secure-conn reads on for any LE controller, so it cannot rule out a
+                // controller without BR/EDR Secure Connections; another adapter can
+                const auto other =
+                    std::find_if(objects.adapters.begin(), objects.adapters.end(), [&](const Adapter& a) {
+                        return adapter_id_of(a.path) != cap.adapter_id;
+                    });
+                if (other != objects.adapters.end())
+                    reason += std::string(" ") +
+                              tr_format(_("If every attempt gives a BR/EDR-only bond, this controller may not support "
+                                          "Secure Connections on BR/EDR; try another with tether --bt-adapter {} "
+                                          "and pair again."),
+                                        adapter_id_of(other->path));
+            }
             cap.reasons.emplace_back(std::move(reason));
         }
         if (!cap.class_ok) {
