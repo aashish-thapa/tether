@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-15 19:09-0700\n"
+"POT-Creation-Date: 2026-10-17 16:11-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Japanese\n"
@@ -1358,6 +1358,14 @@ msgstr ""
 "ングしてください。"
 
 #: src/core/src/bluetooth/objects.cpp
+#, c++-format
+msgid ""
+"If every attempt gives a BR/EDR-only bond, this controller may not support "
+"Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
+"pair again."
+msgstr "何度試しても BR/EDR のみのペアリングになる場合、このコントローラは BR/EDR の Secure Connections に対応していない可能性があります。tether --bt-adapter {} で別のコントローラに切り替えて、もう一度ペアリングしてください。"
+
+#: src/core/src/bluetooth/objects.cpp
 msgid ""
 "The iPhone will not offer its Messages and Contacts permissions until this "
 "adapter presents itself as A/V Hands-Free (major 4, minor 8)."
@@ -1371,7 +1379,12 @@ msgid ""
 "(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
 "remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
 "ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
-msgstr "メッセージと連絡先には L2CAP ERTM が必要ですが、カーネルで無効になっています (bluetooth.disable_ertm)。これで次の再起動まで有効に戻ります。恒久的にするには、カーネルコマンドラインまたは /etc/modprobe.d から disable_ertm を削除してください (rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)。"
+msgstr ""
+"メッセージと連絡先には L2CAP ERTM が必要ですが、カーネルで無効になっています "
+"(bluetooth.disable_ertm)。これで次の再起動まで有効に戻ります。恒久的にするに"
+"は、カーネルコマンドラインまたは /etc/modprobe.d から disable_ertm を削除して"
+"ください (rpm-ostree: sudo rpm-ostree kargs --"
+"delete=bluetooth.disable_ertm=1)。"
 
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
@@ -1562,7 +1575,10 @@ msgid ""
 "{} cannot connect because the kernel has L2CAP ERTM disabled "
 "(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
 "iPhone."
-msgstr "カーネルで L2CAP ERTM が無効になっているため (bluetooth.disable_ertm)、{}に接続できません。tether --bt-setup を実行してください。iPhone 側に問題はありません。"
+msgstr ""
+"カーネルで L2CAP ERTM が無効になっているため (bluetooth.disable_ertm)、{}に接"
+"続できません。tether --bt-setup を実行してください。iPhone 側に問題はありませ"
+"ん。"
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp

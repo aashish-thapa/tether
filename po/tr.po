@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-15 19:09-0700\n"
+"POT-Creation-Date: 2026-10-17 16:11-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Turkish\n"
@@ -1367,6 +1367,14 @@ msgid "Delete this computer on the iPhone (Forget This Device) and pair again."
 msgstr "Bu bilgisayarı iPhone'da silin (Bu Aygıtı Unut) ve yeniden eşleşin."
 
 #: src/core/src/bluetooth/objects.cpp
+#, c++-format
+msgid ""
+"If every attempt gives a BR/EDR-only bond, this controller may not support "
+"Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
+"pair again."
+msgstr "Her deneme yalnızca BR/EDR eşleşmesiyle sonuçlanıyorsa, bu denetleyici BR/EDR üzerinde Secure Connections'ı desteklemiyor olabilir; tether --bt-adapter {} ile başka birini deneyin ve yeniden eşleşin."
+
+#: src/core/src/bluetooth/objects.cpp
 msgid ""
 "The iPhone will not offer its Messages and Contacts permissions until this "
 "adapter presents itself as A/V Hands-Free (major 4, minor 8)."
@@ -1380,7 +1388,12 @@ msgid ""
 "(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
 "remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
 "ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
-msgstr "Mesajlar ve Kişiler için L2CAP ERTM gerekir, ancak çekirdek bunu devre dışı bırakmış (bluetooth.disable_ertm). Bu komut onu bir sonraki yeniden başlatmaya kadar tekrar açar. Kalıcı yapmak için disable_ertm'yi çekirdek komut satırından veya /etc/modprobe.d'den kaldırın (rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr ""
+"Mesajlar ve Kişiler için L2CAP ERTM gerekir, ancak çekirdek bunu devre dışı "
+"bırakmış (bluetooth.disable_ertm). Bu komut onu bir sonraki yeniden "
+"başlatmaya kadar tekrar açar. Kalıcı yapmak için disable_ertm'yi çekirdek "
+"komut satırından veya /etc/modprobe.d'den kaldırın (rpm-ostree: sudo rpm-"
+"ostree kargs --delete=bluetooth.disable_ertm=1)."
 
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
@@ -1571,7 +1584,9 @@ msgid ""
 "{} cannot connect because the kernel has L2CAP ERTM disabled "
 "(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
 "iPhone."
-msgstr "Çekirdekte L2CAP ERTM devre dışı olduğu için (bluetooth.disable_ertm) {} bağlanamıyor. tether --bt-setup komutunu çalıştırın; iPhone'da bir sorun yok."
+msgstr ""
+"Çekirdekte L2CAP ERTM devre dışı olduğu için (bluetooth.disable_ertm) {} "
+"bağlanamıyor. tether --bt-setup komutunu çalıştırın; iPhone'da bir sorun yok."
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp

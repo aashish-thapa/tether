@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether 0.2.38\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-15 19:09-0700\n"
+"POT-Creation-Date: 2026-10-17 16:11-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1227,6 +1227,14 @@ msgstr ""
 
 #: src/core/src/bluetooth/objects.cpp
 msgid "Delete this computer on the iPhone (Forget This Device) and pair again."
+msgstr ""
+
+#: src/core/src/bluetooth/objects.cpp
+#, c++-format
+msgid ""
+"If every attempt gives a BR/EDR-only bond, this controller may not support "
+"Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
+"pair again."
 msgstr ""
 
 #: src/core/src/bluetooth/objects.cpp

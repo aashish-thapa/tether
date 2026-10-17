@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-15 19:09-0700\n"
+"POT-Creation-Date: 2026-10-17 16:11-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Korean\n"
@@ -1340,6 +1340,14 @@ msgid "Delete this computer on the iPhone (Forget This Device) and pair again."
 msgstr "iPhone에서 이 컴퓨터를 삭제하고(이 기기 지우기) 다시 페어링하십시오."
 
 #: src/core/src/bluetooth/objects.cpp
+#, c++-format
+msgid ""
+"If every attempt gives a BR/EDR-only bond, this controller may not support "
+"Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
+"pair again."
+msgstr "매번 BR/EDR 전용 페어링만 만들어진다면 이 컨트롤러가 BR/EDR에서 Secure Connections를 지원하지 않을 수 있습니다. tether --bt-adapter {}로 다른 컨트롤러를 선택한 뒤 다시 페어링하십시오."
+
+#: src/core/src/bluetooth/objects.cpp
 msgid ""
 "The iPhone will not offer its Messages and Contacts permissions until this "
 "adapter presents itself as A/V Hands-Free (major 4, minor 8)."
@@ -1353,7 +1361,11 @@ msgid ""
 "(bluetooth.disable_ertm). This turns it back on until reboot. To keep it, "
 "remove disable_ertm from the kernel command line or /etc/modprobe.d (rpm-"
 "ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
-msgstr "메시지와 연락처에는 L2CAP ERTM이 필요하지만 커널에서 비활성화되어 있습니다(bluetooth.disable_ertm). 이 명령은 다음 재부팅까지 다시 켭니다. 유지하려면 커널 명령줄이나 /etc/modprobe.d에서 disable_ertm을 제거하세요(rpm-ostree: sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
+msgstr ""
+"메시지와 연락처에는 L2CAP ERTM이 필요하지만 커널에서 비활성화되어 있습니다"
+"(bluetooth.disable_ertm). 이 명령은 다음 재부팅까지 다시 켭니다. 유지하려면 "
+"커널 명령줄이나 /etc/modprobe.d에서 disable_ertm을 제거하세요(rpm-ostree: "
+"sudo rpm-ostree kargs --delete=bluetooth.disable_ertm=1)."
 
 #: src/core/src/bluetooth/pairing.cpp
 msgid "No Bluetooth adapter is available."
@@ -1543,7 +1555,9 @@ msgid ""
 "{} cannot connect because the kernel has L2CAP ERTM disabled "
 "(bluetooth.disable_ertm). Run tether --bt-setup; nothing is wrong on the "
 "iPhone."
-msgstr "커널에서 L2CAP ERTM이 비활성화되어 있어(bluetooth.disable_ertm) {}에 연결할 수 없습니다. tether --bt-setup을 실행하세요. iPhone에는 문제가 없습니다."
+msgstr ""
+"커널에서 L2CAP ERTM이 비활성화되어 있어(bluetooth.disable_ertm) {}에 연결할 "
+"수 없습니다. tether --bt-setup을 실행하세요. iPhone에는 문제가 없습니다."
 
 #. TRANSLATORS: {0} is Messages or Contacts, {1} is an iPhone Settings toggle name.
 #: src/core/src/bluetooth/profile_supervisor.cpp
