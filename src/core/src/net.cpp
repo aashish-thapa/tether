@@ -2366,7 +2366,13 @@ namespace tether {
 
             debug::log(INFO, "TcpServer: Client disconnected (fd: {})", client_fd);
             auto it = connected_remote_clients.find(client_fd);
-            if (it != connected_remote_clients.end()) {
+            // simultaneous dial duplicates session
+            const bool still_connected =
+                it != connected_remote_clients.end() && !it->second.fingerprint.empty() &&
+                std::any_of(connected_remote_clients.begin(), connected_remote_clients.end(), [&](const auto& entry) {
+                    return entry.first != client_fd && entry.second.fingerprint == it->second.fingerprint;
+                });
+            if (it != connected_remote_clients.end() && !still_connected) {
                 nlohmann::json event;
                 event["command"] = "client_disconnected";
                 event["address"] = it->second.address;
