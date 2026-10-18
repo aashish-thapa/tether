@@ -903,6 +903,20 @@ a status-bar widget that reads battery itself. Only one of them can hold the cha
 
 The iPhone serves one MAP session at a time. Any other program on any machine holding it will block Tether.
 
+**Two computers, one iPhone.** Whichever Tether opens MAP first keeps it, and the other polls
+with `busy` until the phone leaves the first one's range. To hand it over:
+
+- "Release messages and contacts while this computer is locked"
+  (`tether --bt-yield-when-locked on`): a locked computer drops MAP and PBAP, and the unlocked
+  one picks them up within about 15 s. Turn it on on both. It reads logind's `LockedHint`, so a
+  locker that does not set it never yields.
+- Release by hand: `tether --bt-release map|pbap|ancs|all`, undone with `--bt-claim`. In the apps
+  it is under Devices > Bluetooth > Advanced. Releases are not saved, so restarting `tetherd`
+  claims everything again. Claiming only retries. The other computer has to release first.
+
+ANCS serves several clients at once, so notifications do not need handing over. Releasing them
+is there for debugging.
+
 Only one program per machine can hold an AirPods AAP channel. See "AirPods" above.
 
 ## Known limits

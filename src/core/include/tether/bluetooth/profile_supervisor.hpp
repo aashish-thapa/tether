@@ -54,6 +54,9 @@ namespace tether::bluetooth {
         bool pbap_open = false;
         ObexError map_error = ObexError::None;
         ObexError pbap_error = ObexError::None;
+        // Released on purpose, so another computer can open it.
+        bool map_held = false;
+        bool pbap_held = false;
         std::string reason;
 
         bool operator==(const ProfileStatus&) const = default;
@@ -79,6 +82,10 @@ namespace tether::bluetooth {
         // the link itself is still up. The next tick reopens it.
         void drop_map();
 
+        // A held profile has its session removed and is not reopened until the
+        // hold is lifted. `by_lock` only changes the reason shown.
+        void set_held(bool map, bool pbap, bool by_lock);
+
         const ProfileStatus& status() const { return status_; }
         const std::string& map_session() const { return map_path_; }
         const std::string& pbap_session() const { return pbap_path_; }
@@ -94,6 +101,7 @@ namespace tether::bluetooth {
         bool pbap_retried_ = false;
         int64_t next_attempt_ = 0;
         bool opened_once_ = false;
+        bool held_by_lock_ = false;
     };
 
 } // namespace tether::bluetooth

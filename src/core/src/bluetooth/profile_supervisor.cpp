@@ -148,6 +148,34 @@ namespace tether::bluetooth {
         next_attempt_ = 0;
     }
 
+    void ProfileSupervisor::set_held(bool map, bool pbap, bool by_lock) {
+        held_by_lock_ = by_lock;
+        if (map != status_.map_held) {
+            status_.map_held = map;
+            if (map) {
+                if (!map_path_.empty())
+                    ops_.remove_session(map_path_);
+                map_path_.clear();
+                map_retried_ = false;
+                status_.map_open = false;
+                status_.map_error = ObexError::None;
+            }
+            next_attempt_ = 0;
+        }
+        if (pbap != status_.pbap_held) {
+            status_.pbap_held = pbap;
+            if (pbap) {
+                if (!pbap_path_.empty())
+                    ops_.remove_session(pbap_path_);
+                pbap_path_.clear();
+                pbap_retried_ = false;
+                status_.pbap_open = false;
+                status_.pbap_error = ObexError::None;
+            }
+            next_attempt_ = 0;
+        }
+    }
+
     bool
         ProfileSupervisor::open_profile(const std::string& target, std::string& path, ObexError& error, bool& retried) {
         std::string err;
@@ -187,24 +215,27 @@ namespace tether::bluetooth {
             return !(status_ == previous);
         }
 
-        if (status_.map_open && status_.pbap_open) {
-            status_.reason = _("Messages and contacts are connected.");
-            return !(status_ == previous);
+        const bool map_done = status_.map_open || status_.map_held;
+        const bool pbap_done = status_.pbap_open || status_.pbap_held;
+
+        if ((!map_done || !pbap_done) && now >= next_attempt_) {
+            if (!map_done)
+                status_.map_open = open_profile("map", map_path_, status_.map_error, map_retried_);
+            if (!pbap_done)
+                status_.pbap_open = open_profile("pbap", pbap_path_, status_.pbap_error, pbap_retried_);
+            if (status_.map_open || status_.pbap_open)
+                opened_once_ = true;
+            next_attempt_ = now + (opened_once_ ? PROFILE_STEADY_POLL_SECONDS : PROFILE_INITIAL_POLL_SECONDS);
         }
 
-        if (now < next_attempt_)
-            return !(status_ == previous);
-
-        if (!status_.map_open)
-            status_.map_open = open_profile("map", map_path_, status_.map_error, map_retried_);
-        if (!status_.pbap_open)
-            status_.pbap_open = open_profile("pbap", pbap_path_, status_.pbap_error, pbap_retried_);
-
-        if (status_.map_open || status_.pbap_open)
-            opened_once_ = true;
-        next_attempt_ = now + (opened_once_ ? PROFILE_STEADY_POLL_SECONDS : PROFILE_INITIAL_POLL_SECONDS);
-
-        if (status_.map_open && status_.pbap_open) {
+        if (status_.map_held || status_.pbap_held) {
+            const std::string names = status_.map_held && status_.pbap_held ? _("Messages and contacts")
+                                      : status_.map_held                    ? _("Messages")
+                                                                            : _("Contacts");
+            // TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
+            status_.reason = held_by_lock_ ? tr_format(_("{} released while this computer is locked."), names)
+                                           : tr_format(_("{} released on this computer."), names);
+        } else if (status_.map_open && status_.pbap_open) {
             status_.reason = _("Messages and contacts are connected.");
         } else if (!status_.map_open && status_.map_error != ObexError::None) {
             // MAP is the feature people notice, so its problem leads.

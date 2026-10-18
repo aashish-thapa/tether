@@ -91,6 +91,11 @@ namespace tether::ui {
             GtkWidget* btn_bt_pair = nullptr;
             GtkWidget* btn_bt_solicit = nullptr;
             GtkWidget* chk_bt_enabled = nullptr;
+            GtkWidget* bt_advanced = nullptr;
+            GtkWidget* chk_bt_hold_map = nullptr;
+            GtkWidget* chk_bt_hold_pbap = nullptr;
+            GtkWidget* chk_bt_hold_ancs = nullptr;
+            GtkWidget* chk_bt_yield_locked = nullptr;
             GtkWidget* btn_bt_unpair = nullptr;
             std::string bt_operation_id;
 
@@ -185,6 +190,15 @@ namespace tether::ui {
         }
 
         void on_bt_enabled_toggled(GtkWidget* widget, gpointer);
+        void on_bt_hold_toggled(GtkWidget* widget, gpointer);
+        void on_bt_yield_locked_toggled(GtkWidget* widget, gpointer);
+
+        // set_active emits toggled, so programmatic writes are fenced from echoing back to the daemon.
+        void set_check(GtkWidget* widget, gpointer handler, bool active) {
+            g_signal_handlers_block_by_func(widget, handler, nullptr);
+            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), active ? TRUE : FALSE);
+            g_signal_handlers_unblock_by_func(widget, handler, nullptr);
+        }
 
         void update_action_bt_scan_controls() {
             if (g_devices.btn_action_bt_pair)
@@ -465,6 +479,15 @@ namespace tether::ui {
             gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g_devices.chk_bt_enabled), bt_on);
             g_signal_handlers_unblock_by_func(
                 g_devices.chk_bt_enabled, reinterpret_cast<gpointer>(on_bt_enabled_toggled), nullptr);
+
+            gtk_widget_set_visible(g_devices.bt_advanced, available && supervised);
+            const auto hold = reinterpret_cast<gpointer>(on_bt_hold_toggled);
+            set_check(g_devices.chk_bt_hold_map, hold, connection.value("map_held", false));
+            set_check(g_devices.chk_bt_hold_pbap, hold, connection.value("pbap_held", false));
+            set_check(g_devices.chk_bt_hold_ancs, hold, connection.value("ancs_held", false));
+            set_check(g_devices.chk_bt_yield_locked,
+                      reinterpret_cast<gpointer>(on_bt_yield_locked_toggled),
+                      g_devices.bt_status.value("yield_when_locked", false));
         }
 
         void update_right_pane() {
@@ -644,6 +667,18 @@ namespace tether::ui {
 
         void on_bt_enabled_toggled(GtkWidget* widget, gpointer) {
             daemon_send({{"command", "bt_set_enabled"},
+                         {"enabled", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == TRUE}});
+        }
+
+        void on_bt_hold_toggled(GtkWidget* widget, gpointer) {
+            const auto* profile = static_cast<const char*>(g_object_get_data(G_OBJECT(widget), "tether-profile"));
+            daemon_send({{"command", "bt_hold"},
+                         {"profile", profile},
+                         {"held", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == TRUE}});
+        }
+
+        void on_bt_yield_locked_toggled(GtkWidget* widget, gpointer) {
+            daemon_send({{"command", "bt_set_yield_when_locked"},
                          {"enabled", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == TRUE}});
         }
 
@@ -1739,6 +1774,40 @@ namespace tether::ui {
                                       "up until you disconnect it."));
         g_signal_connect(g_devices.chk_bt_enabled, "toggled", G_CALLBACK(on_bt_enabled_toggled), nullptr);
         gtk_box_pack_start(GTK_BOX(bt_box), g_devices.chk_bt_enabled, FALSE, FALSE, 0);
+
+        // Collapsed by default: these are for sharing one iPhone between computers, and for debugging.
+        g_devices.bt_advanced = gtk_expander_new(_("Advanced"));
+        GtkWidget* advanced_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+        gtk_widget_set_margin_top(advanced_box, 6);
+        auto advanced_check = [&](const char* text, const char* profile, GCallback handler) {
+            GtkWidget* check = gtk_check_button_new_with_label(text);
+            GtkWidget* label = gtk_bin_get_child(GTK_BIN(check));
+            gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+            gtk_label_set_max_width_chars(GTK_LABEL(label), 28);
+            if (profile)
+                g_object_set_data(G_OBJECT(check), "tether-profile", const_cast<char*>(profile));
+            g_signal_connect(check, "toggled", handler, nullptr);
+            gtk_box_pack_start(GTK_BOX(advanced_box), check, FALSE, FALSE, 0);
+            return check;
+        };
+        const auto hold = G_CALLBACK(on_bt_hold_toggled);
+        g_devices.chk_bt_hold_map = advanced_check(_("Release messages"), "map", hold);
+        g_devices.chk_bt_hold_pbap = advanced_check(_("Release contacts"), "pbap", hold);
+        g_devices.chk_bt_hold_ancs = advanced_check(_("Release notifications"), "ancs", hold);
+        g_devices.chk_bt_yield_locked = advanced_check(_("Release messages and contacts while this computer is locked"),
+                                                       nullptr,
+                                                       G_CALLBACK(on_bt_yield_locked_toggled));
+        GtkWidget* advanced_note = gtk_label_new(_("The iPhone serves messages to one computer at a time. Releasing "
+                                                   "lets another computer take them; unchecking retries, but cannot "
+                                                   "take them from a computer that still holds them. Releases last "
+                                                   "until tetherd restarts."));
+        gtk_label_set_xalign(GTK_LABEL(advanced_note), 0.0);
+        gtk_label_set_line_wrap(GTK_LABEL(advanced_note), TRUE);
+        gtk_label_set_max_width_chars(GTK_LABEL(advanced_note), 30);
+        gtk_style_context_add_class(gtk_widget_get_style_context(advanced_note), "muted");
+        gtk_box_pack_start(GTK_BOX(advanced_box), advanced_note, FALSE, FALSE, 0);
+        gtk_container_add(GTK_CONTAINER(g_devices.bt_advanced), advanced_box);
+        gtk_box_pack_start(GTK_BOX(bt_box), g_devices.bt_advanced, FALSE, FALSE, 0);
 
         g_devices.lbl_bt_reason = gtk_label_new(nullptr);
         gtk_label_set_xalign(GTK_LABEL(g_devices.lbl_bt_reason), 0.0);

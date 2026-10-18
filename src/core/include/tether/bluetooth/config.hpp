@@ -61,6 +61,8 @@ namespace tether::bluetooth {
         bool lock_on_away = false;
         // How long every bearer must stay down before the session is locked.
         int lock_away_seconds = AWAY_LOCK_GRACE_SECONDS;
+        // Whether a locked session releases MAP and PBAP for another computer.
+        bool yield_when_locked = false;
         // What performs the lock. Empty uses logind.
         std::string lock_command;
 

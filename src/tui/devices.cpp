@@ -1017,6 +1017,35 @@ namespace tether::tui {
                 // Re-soliciting only helps when the phone is withholding a profile.
                 if (available && supervised && (map_error == "forbidden" || map_error == "no_record" || !ancs_ready))
                     rows.push_back(action_row(_("Show iPhone Permissions"), [this] { solicit(); }));
+
+                // collapsed by default, for sharing one iPhone between computers, and debugging.
+                if (available && supervised) {
+                    rows.push_back(action_row(
+                        std::string(bt_advanced_ ? "▾ " : "▸ ") + _("Advanced"),
+                        [this] { bt_advanced_ = !bt_advanced_; },
+                        "bt-advanced"));
+                    if (bt_advanced_) {
+                        auto hold_row = [&](const char* label, const char* profile, const char* key) {
+                            const bool held = c.value(key, false);
+                            return toggle_row(label, held, true, [profile, held] {
+                                app::send({{"command", "bt_hold"}, {"profile", profile}, {"held", !held}});
+                            });
+                        };
+                        rows.push_back(hold_row(_("Release messages"), "map", "map_held"));
+                        rows.push_back(hold_row(_("Release contacts"), "pbap", "pbap_held"));
+                        rows.push_back(hold_row(_("Release notifications"), "ancs", "ancs_held"));
+                        const bool yield = bt_status_.value("yield_when_locked", false);
+                        rows.push_back(toggle_row(
+                            _("Release messages and contacts while this computer is locked"), yield, true, [yield] {
+                                app::send({{"command", "bt_set_yield_when_locked"}, {"enabled", !yield}});
+                            }));
+                        rows.push_back(text_row(_("The iPhone serves messages to one computer at a time. Releasing "
+                                                  "lets another computer take them; unchecking retries, but cannot "
+                                                  "take them from a computer that still holds them. Releases last "
+                                                  "until tetherd restarts."),
+                                                Tone::Muted));
+                    }
+                }
                 return rows;
             }
 
@@ -1137,6 +1166,7 @@ namespace tether::tui {
             std::string scan_note_;
             bool select_bt_after_scan_ = false;
             bool airpods_connecting_ = false;
+            bool bt_advanced_ = false;
 
             std::string bt_progress_;
             int bt_progress_timer_ = 0;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether 0.2.38\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-17 16:11-0700\n"
+"POT-Creation-Date: 2026-10-18 10:15-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,6 +110,20 @@ msgstr ""
 
 #: src/cli/main.cpp
 msgid "Lock the session when the iPhone goes out of range: on or off."
+msgstr ""
+
+#: src/cli/main.cpp
+msgid "Release messages and contacts while this computer is locked: on or off."
+msgstr ""
+
+#: src/cli/main.cpp
+msgid ""
+"Release a profile for another computer until claimed: map, pbap, ancs, or "
+"all."
+msgstr ""
+
+#: src/cli/main.cpp
+msgid "Take back a released profile: map, pbap, ancs, or all."
 msgstr ""
 
 #: src/cli/main.cpp
@@ -530,6 +544,28 @@ msgstr ""
 
 #: src/cli/main.cpp
 msgid "Locking on the iPhone going out of range is off."
+msgstr ""
+
+#: src/cli/main.cpp
+msgid "Messages and contacts will be released while this computer is locked."
+msgstr ""
+
+#: src/cli/main.cpp
+msgid "Messages and contacts stay connected while this computer is locked."
+msgstr ""
+
+#: src/cli/main.cpp
+msgid "Use map, pbap, ancs, or all.\n"
+msgstr ""
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Released %s on this computer.\n"
+msgstr ""
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Claiming %s. If another computer holds it, release it there first.\n"
 msgstr ""
 
 #: src/cli/main.cpp
@@ -1452,6 +1488,21 @@ msgid "Waiting for the iPhone."
 msgstr ""
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
+msgid "Messages and contacts"
+msgstr ""
+
+#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released while this computer is locked."
+msgstr ""
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released on this computer."
+msgstr ""
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
 msgid "Messages and contacts are connected."
 msgstr ""
 
@@ -2154,6 +2205,33 @@ msgid ""
 "Keep the Bluetooth link to the iPhone up, reconnecting whenever it drops. "
 "Turning this off stops Tether reconnecting; a link that is already up stays "
 "up until you disconnect it."
+msgstr ""
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Advanced"
+msgstr ""
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages"
+msgstr ""
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release contacts"
+msgstr ""
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release notifications"
+msgstr ""
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages and contacts while this computer is locked"
+msgstr ""
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid ""
+"The iPhone serves messages to one computer at a time. Releasing lets another "
+"computer take them; unchecking retries, but cannot take them from a computer "
+"that still holds them. Releases last until tetherd restarts."
 msgstr ""
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp

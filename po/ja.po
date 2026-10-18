@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-17 16:11-0700\n"
+"POT-Creation-Date: 2026-10-18 10:15-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Japanese\n"
@@ -115,6 +115,20 @@ msgstr "通話中に AirPods を iPhone へ渡します: on または off。"
 #: src/cli/main.cpp
 msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "iPhone が範囲外になったらセッションをロックします: on または off。"
+
+#: src/cli/main.cpp
+msgid "Release messages and contacts while this computer is locked: on or off."
+msgstr "このコンピュータがロックされている間、メッセージと連絡先を解放します: on または off。"
+
+#: src/cli/main.cpp
+msgid ""
+"Release a profile for another computer until claimed: map, pbap, ancs, or "
+"all."
+msgstr "再取得するまで、プロファイルを他のコンピュータのために解放します: map、pbap、ancs、all。"
+
+#: src/cli/main.cpp
+msgid "Take back a released profile: map, pbap, ancs, or all."
+msgstr "解放したプロファイルを再取得します: map、pbap、ancs、all。"
 
 #: src/cli/main.cpp
 msgid "List iPhone message conversations."
@@ -575,6 +589,28 @@ msgstr "iPhone が範囲外になるとセッションをロックします。"
 #: src/cli/main.cpp
 msgid "Locking on the iPhone going out of range is off."
 msgstr "iPhone が範囲外になったときのロックは無効です。"
+
+#: src/cli/main.cpp
+msgid "Messages and contacts will be released while this computer is locked."
+msgstr "このコンピュータがロックされている間、メッセージと連絡先は解放されます。"
+
+#: src/cli/main.cpp
+msgid "Messages and contacts stay connected while this computer is locked."
+msgstr "このコンピュータがロックされていても、メッセージと連絡先は接続されたままです。"
+
+#: src/cli/main.cpp
+msgid "Use map, pbap, ancs, or all.\n"
+msgstr "map、pbap、ancs、all のいずれかを指定してください。\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Released %s on this computer.\n"
+msgstr "このコンピュータで解放しました: %s。\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Claiming %s. If another computer holds it, release it there first.\n"
+msgstr "%s を再取得しています。他のコンピュータが保持している場合は、先にそちらで解放してください。\n"
 
 #: src/cli/main.cpp
 msgid "Daemon closed the connection before the operation finished.\n"
@@ -1363,7 +1399,10 @@ msgid ""
 "If every attempt gives a BR/EDR-only bond, this controller may not support "
 "Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
 "pair again."
-msgstr "何度試しても BR/EDR のみのペアリングになる場合、このコントローラは BR/EDR の Secure Connections に対応していない可能性があります。tether --bt-adapter {} で別のコントローラに切り替えて、もう一度ペアリングしてください。"
+msgstr ""
+"何度試しても BR/EDR のみのペアリングになる場合、このコントローラは BR/EDR の "
+"Secure Connections に対応していない可能性があります。tether --bt-adapter {} "
+"で別のコントローラに切り替えて、もう一度ペアリングしてください。"
 
 #: src/core/src/bluetooth/objects.cpp
 msgid ""
@@ -1618,6 +1657,21 @@ msgstr "{} を開けませんでした。"
 #: src/gtk/notifications_view.cpp src/tui/notifications.cpp
 msgid "Waiting for the iPhone."
 msgstr "iPhone を待っています。"
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+msgid "Messages and contacts"
+msgstr "メッセージと連絡先"
+
+#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released while this computer is locked."
+msgstr "このコンピュータのロック中は解放されています: {}。"
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released on this computer."
+msgstr "このコンピュータで解放されています: {}。"
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 msgid "Messages and contacts are connected."
@@ -2379,6 +2433,33 @@ msgstr ""
 "iPhone との Bluetooth リンクを維持し、切断されるたびに再接続します。オフにす"
 "ると Tether は再接続しなくなります。すでに確立しているリンクは、切断するまで"
 "維持されます。"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Advanced"
+msgstr "詳細設定"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages"
+msgstr "メッセージを解放"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release contacts"
+msgstr "連絡先を解放"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release notifications"
+msgstr "通知を解放"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages and contacts while this computer is locked"
+msgstr "このコンピュータのロック中はメッセージと連絡先を解放"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid ""
+"The iPhone serves messages to one computer at a time. Releasing lets another "
+"computer take them; unchecking retries, but cannot take them from a computer "
+"that still holds them. Releases last until tetherd restarts."
+msgstr "iPhone はメッセージを一度に 1 台のコンピュータにしか提供しません。解放すると他のコンピュータが取得できます。チェックを外すと再試行しますが、まだ保持しているコンピュータから取り戻すことはできません。解放は tetherd を再起動するまで続きます。"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

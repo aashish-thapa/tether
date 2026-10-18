@@ -119,4 +119,9 @@ namespace tether {
         return lock_via_logind();
     }
 
+    bool session_locked() {
+        GDBusConnection* connection = bus();
+        return connection && already_locked(connection);
+    }
+
 } // namespace tether

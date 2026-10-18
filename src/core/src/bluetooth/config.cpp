@@ -71,6 +71,7 @@ namespace tether::bluetooth {
         j["lock_on_away"] = config.lock_on_away;
         j["lock_away_seconds"] = config.lock_away_seconds;
         j["lock_command"] = config.lock_command;
+        j["yield_when_locked"] = config.yield_when_locked;
         return j.dump(2);
     }
 
@@ -96,6 +97,7 @@ namespace tether::bluetooth {
             config.airpods_pause = pause_mode_from_string(j.value("airpods_pause", ""));
             config.airpods_handoff = j.value("airpods_handoff", false);
             config.lock_on_away = j.value("lock_on_away", false);
+            config.yield_when_locked = j.value("yield_when_locked", false);
             // A zero or negative grace would lock on the first flap.
             config.lock_away_seconds = std::max(1, j.value("lock_away_seconds", AWAY_LOCK_GRACE_SECONDS));
             config.lock_command = j.value("lock_command", "");

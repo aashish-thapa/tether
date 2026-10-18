@@ -688,6 +688,12 @@ namespace tether::bluetooth {
         // Whether losing the phone to a supervision timeout locks the session
         std::atomic<bool> lock_on_away{false};
         std::atomic<int> lock_away_seconds{AWAY_LOCK_GRACE_SECONDS};
+        // Profiles released by hand, for another computer to use. Not persisted.
+        std::atomic<bool> hold_map{false};
+        std::atomic<bool> hold_pbap{false};
+        std::atomic<bool> hold_ancs{false};
+        // Whether a locked session releases MAP and PBAP.
+        std::atomic<bool> yield_when_locked{false};
         // When the last path to the phone went down, -1 while any is up.
         int64_t gone_since = -1;
         // Whether the away lock has already fired for this absence.
@@ -799,6 +805,7 @@ namespace tether::bluetooth {
         std::lock_guard<std::mutex> lock(status_mutex);
         payload["ancs_ready"] = ancs_ready;
         payload["ancs_reason"] = ancs_reason;
+        payload["ancs_held"] = hold_ancs.load();
         current_status = std::move(payload);
     }
 
@@ -829,6 +836,8 @@ namespace tether::bluetooth {
             {"pbap_open", profiles.pbap_open},
             {"map_error", to_string(profiles.map_error)},
             {"pbap_error", to_string(profiles.pbap_error)},
+            {"map_held", profiles.map_held},
+            {"pbap_held", profiles.pbap_held},
             // Two independent halves, so both reasons are reported; the UI shows
             // whichever is actionable.
             {"link_reason", bearer.reason},
@@ -1259,7 +1268,7 @@ namespace tether::bluetooth {
 
     void ConnectionState::apply_ancs_preference() {
         ancs_preference = ancs_wanted.load();
-        const bool effective = ancs_preference && ancs_available();
+        const bool effective = ancs_preference && !hold_ancs.load() && ancs_available();
         if (effective == ancs_enabled) {
             if (auto client = ancs())
                 client->set_content_enabled(ancs_content_wanted.load());
@@ -1380,6 +1389,8 @@ namespace tether::bluetooth {
             }
             link_was_ready = link_ready;
 
+            const bool locked = yield_when_locked.load() && session_locked();
+            profiles->set_held(hold_map.load() || locked, hold_pbap.load() || locked, locked);
             profiles->tick(now, bearers->status().device_paired);
 
             const auto& bearer = bearers->status();
@@ -1439,6 +1450,7 @@ namespace tether::bluetooth {
         state_->calls_wanted = config.calls_enabled;
         state_->lock_on_away = config.lock_on_away;
         state_->lock_away_seconds = config.lock_away_seconds;
+        state_->yield_when_locked = config.yield_when_locked;
         // Read the controller's capability here rather than letting each caller
         // latch its own copy. At startup BlueZ may not have finished enumerating
         // the adapter, and its free advertising-instance count drops to zero
@@ -1576,6 +1588,21 @@ namespace tether::bluetooth {
     nlohmann::json ConnectionManager::call_history() const { return state_->call_history_json(); }
 
     void ConnectionManager::set_calls_enabled(bool enabled) { state_->calls_wanted = enabled; }
+
+    bool ConnectionManager::set_hold(const std::string& profile, bool held) {
+        const bool all = profile == "all";
+        if (!all && profile != "map" && profile != "pbap" && profile != "ancs")
+            return false;
+        if (all || profile == "map")
+            state_->hold_map = held;
+        if (all || profile == "pbap")
+            state_->hold_pbap = held;
+        if (all || profile == "ancs")
+            state_->hold_ancs = held;
+        return true;
+    }
+
+    void ConnectionManager::set_yield_when_locked(bool enabled) { state_->yield_when_locked = enabled; }
 
     void ConnectionManager::set_lock_on_away(bool enabled, int grace_seconds) {
         state_->lock_on_away = enabled;
