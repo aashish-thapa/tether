@@ -11,6 +11,7 @@
 #include "ui_util.hpp"
 
 #include <csignal>
+#include <filesystem>
 #include <glib-unix.h>
 #include <gtk/gtk.h>
 #include <string>
@@ -430,11 +431,46 @@ int main(int argc, char** argv) {
                                   G_OPTION_ARG_STRING,
                                   _("Open the messages tab on this conversation"),
                                   "KEY");
+    g_application_add_main_option(G_APPLICATION(app),
+                                  "send",
+                                  0,
+                                  G_OPTION_FLAG_NONE,
+                                  G_OPTION_ARG_NONE,
+                                  _("Send the given files, asking which device when several are connected"),
+                                  nullptr);
+    const GOptionEntry remaining[] = {
+        {G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, nullptr, nullptr, _("FILE…")},
+        {},
+    };
+    g_application_add_main_option_entries(G_APPLICATION(app), remaining);
 
     g_signal_connect(app,
                      "command-line",
                      G_CALLBACK(+[](GApplication* app, GApplicationCommandLine* cmdline, gpointer) -> gint {
                          GVariantDict* options = g_application_command_line_get_options_dict(cmdline);
+                         if (g_variant_dict_contains(options, "send")) {
+                             // paths are resolved against caller's directory, which can differ
+                             std::vector<std::filesystem::path> paths;
+                             const gchar** args = nullptr;
+                             if (g_variant_dict_lookup(options, G_OPTION_REMAINING, "^a&ay", &args) && args) {
+                                 for (const gchar** arg = args; *arg; ++arg) {
+                                     GFile* file = g_application_command_line_create_file_for_arg(cmdline, *arg);
+                                     if (gchar* path = g_file_get_path(file)) {
+                                         paths.emplace_back(path);
+                                         g_free(path);
+                                     }
+                                     g_object_unref(file);
+                                 }
+                                 g_free(args);
+                             }
+                             // first launch builds the UI hidden; a running one stays as it is.
+                             if (!tether::ui::main_window()) {
+                                 g_start_hidden = TRUE;
+                                 g_application_activate(app);
+                             }
+                             tether::ui::devices_view_send_files(std::move(paths));
+                             return 0;
+                         }
                          if (g_variant_dict_contains(options, "tray"))
                              g_start_hidden = TRUE;
                          for (const char* view : {"devices", "messages", "notifications", "contacts"}) {

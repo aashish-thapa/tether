@@ -25,7 +25,7 @@ namespace tether {
 
     // Simple registry for active clients to support broadcasting
     void register_client_fd(int fd);
-    void register_client_ssl(int fd, SSL* ssl);
+    void register_client_ssl(int fd, SSL* ssl, const std::string& fingerprint);
     void unregister_client_fd(int fd);
     void broadcast_message(const std::string& msg, int exclude_fd = -1);
     void register_local_subscriber(int fd);
@@ -45,6 +45,8 @@ namespace tether {
     void otp_publish(const std::string& code, const std::string& sender_domain = "", int exclude_fd = -1);
     void record_received_file(const std::filesystem::path& path, size_t bytes_written);
     size_t broadcast_tcp_message(const std::string& msg, int exclude_fd = -1);
+    // Writes to the trusted peer with this fingerprint; 0 when it is not connected.
+    size_t send_tcp_message_to(const std::string& fingerprint, const std::string& msg);
 
     inline constexpr size_t CLIPBOARD_IMAGE_MAX_BYTES = 32u * 1024 * 1024;
 

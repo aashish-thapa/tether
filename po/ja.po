@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Japanese\n"
@@ -46,6 +46,10 @@ msgstr ""
 #: src/cli/main.cpp
 msgid "Send a file through tether."
 msgstr "tether 経由でファイルを送信します。"
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
+msgstr "--send-file と併用し、接続中の 1 台のデバイスに送信します (名前またはフィンガープリント)。"
 
 #: src/cli/main.cpp
 msgid "Start the browser Native Messaging Host proxy loop."
@@ -120,7 +124,9 @@ msgstr "iPhone が範囲外になったらセッションをロックします: 
 msgid ""
 "Release messages and contacts while this computer is locked or idle: on or "
 "off."
-msgstr "このコンピュータがロック中またはアイドル状態の間、メッセージと連絡先を解放します: on または off。"
+msgstr ""
+"このコンピュータがロック中またはアイドル状態の間、メッセージと連絡先を解放し"
+"ます: on または off。"
 
 #: src/cli/main.cpp
 msgid ""
@@ -597,12 +603,16 @@ msgstr "iPhone が範囲外になったときのロックは無効です。"
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts will be released while this computer is locked or idle."
-msgstr "このコンピュータがロック中またはアイドル状態の間、メッセージと連絡先は解放されます。"
+msgstr ""
+"このコンピュータがロック中またはアイドル状態の間、メッセージと連絡先は解放さ"
+"れます。"
 
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts stay connected while this computer is locked or idle."
-msgstr "このコンピュータがロック中またはアイドル状態でも、メッセージと連絡先は接続されたままです。"
+msgstr ""
+"このコンピュータがロック中またはアイドル状態でも、メッセージと連絡先は接続さ"
+"れたままです。"
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -797,6 +807,16 @@ msgstr "メッセージは送信されませんでした。"
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
 msgstr "デーモンの状態を読み取れませんでした。\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr "{} という名前の接続中のデバイスはありません。'tether status' で確認してください。\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
+msgstr "{} という名前のデバイスが複数あります。代わりにフィンガープリントを指定してください。\n"
 
 #: src/cli/main.cpp
 msgid "Version"
@@ -2155,6 +2175,14 @@ msgstr "{} を送信しています…"
 msgid "({0} of {1})"
 msgstr "({1} 件中 {0} 件)"
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr "送信先…"
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr "キャンセル(_C)"
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr "デーモンを利用できません。"
@@ -2162,10 +2190,6 @@ msgstr "デーモンを利用できません。"
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
 msgstr "ファイルを送信"
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
-msgstr "キャンセル(_C)"
 
 #: src/gtk/devices_view.cpp
 msgid "_Send"
@@ -2214,6 +2238,14 @@ msgstr ""
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
 msgstr "不明なデバイス"
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr "フォルダは送信できません。ファイルを選択してください。"
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
+msgstr "接続中のデバイスはありません。"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Connected"
@@ -2560,6 +2592,14 @@ msgstr "このタブで開く"
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
 msgstr "この会話でメッセージタブを開く"
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr "指定したファイルを送信します。複数のデバイスが接続中の場合は送信先を尋ねます"
+
+#: src/gtk/main.cpp
+msgid "FILE…"
+msgstr "ファイル…"
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp
 #, c++-format

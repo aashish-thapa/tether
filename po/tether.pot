@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether 0.2.38\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,6 +44,10 @@ msgstr ""
 
 #: src/cli/main.cpp
 msgid "Send a file through tether."
+msgstr ""
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
 msgstr ""
 
 #: src/cli/main.cpp
@@ -740,6 +744,16 @@ msgstr ""
 
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
+msgstr ""
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr ""
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
 msgstr ""
 
 #: src/cli/main.cpp
@@ -1957,16 +1971,20 @@ msgstr ""
 msgid "({0} of {1})"
 msgstr ""
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr ""
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr ""
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr ""
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
-msgstr ""
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
 msgstr ""
 
 #: src/gtk/devices_view.cpp
@@ -2005,6 +2023,14 @@ msgstr ""
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
+msgstr ""
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr ""
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
 msgstr ""
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
@@ -2322,6 +2348,14 @@ msgstr ""
 
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
+msgstr ""
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr ""
+
+#: src/gtk/main.cpp
+msgid "FILE…"
 msgstr ""
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp

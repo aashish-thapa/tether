@@ -36,6 +36,16 @@ namespace tether {
             return "";
         }
 
+        std::string describe_send_error(const std::string& protocol_error) {
+            if (protocol_error == "unauthorized")
+                return "Unauthorized. Device not paired.";
+            if (protocol_error == "no_connected_mobile_client")
+                return "No connected iPhone client is available.";
+            if (protocol_error == "target_not_connected")
+                return "That device is not connected.";
+            return protocol_error;
+        }
+
     } // namespace
 
     Client::Client() {}
@@ -349,7 +359,7 @@ namespace tether {
         return response;
     }
 
-    bool Client::send_file(const std::string& path, std::string& err_out) {
+    bool Client::send_file(const std::string& path, std::string& err_out, const std::string& target) {
         if (path.empty() || !std::filesystem::exists(path)) {
             err_out = "Invalid or missing file path.";
             return false;
@@ -374,16 +384,12 @@ namespace tether {
         j_start["filename"] = filename;
         j_start["size"] = file_size;
         j_start["transfer_id"] = transfer_id;
+        if (!target.empty())
+            j_start["target"] = target;
 
         std::string s_resp = send_and_wait(j_start.dump() + "\n");
         if (std::string protocol_error = extract_protocol_error(s_resp); !protocol_error.empty()) {
-            if (protocol_error == "unauthorized") {
-                err_out = "Unauthorized. Device not paired.";
-            } else if (protocol_error == "no_connected_mobile_client") {
-                err_out = "No connected iPhone client is available.";
-            } else {
-                err_out = protocol_error;
-            }
+            err_out = describe_send_error(protocol_error);
             return false;
         }
 
@@ -402,14 +408,12 @@ namespace tether {
             j_chunk["chunk_index"] = chunk_idx++;
             j_chunk["transfer_id"] = transfer_id;
             j_chunk["data"] = tether::base64_encode(buffer.data(), bytes_read);
+            if (!target.empty())
+                j_chunk["target"] = target;
 
             std::string chunk_resp = send_and_wait(j_chunk.dump() + "\n");
             if (std::string protocol_error = extract_protocol_error(chunk_resp); !protocol_error.empty()) {
-                if (protocol_error == "no_connected_mobile_client") {
-                    err_out = "No connected iPhone client is available.";
-                } else {
-                    err_out = protocol_error;
-                }
+                err_out = describe_send_error(protocol_error);
                 return false;
             }
         }
@@ -417,6 +421,8 @@ namespace tether {
         nlohmann::json j_end;
         j_end["command"] = "file_end";
         j_end["transfer_id"] = transfer_id;
+        if (!target.empty())
+            j_end["target"] = target;
 
         std::string resp = send_and_wait(j_end.dump() + "\n");
         try {
@@ -425,12 +431,7 @@ namespace tether {
                 return true;
             }
             if (r.value("command", "") == "error") {
-                std::string message = r.value("message", "Transfer sequence explicitly rejected externally.");
-                if (message == "no_connected_mobile_client") {
-                    err_out = "No connected iPhone client is available.";
-                } else {
-                    err_out = message;
-                }
+                err_out = describe_send_error(r.value("message", "Transfer sequence explicitly rejected externally."));
                 return false;
             }
         } catch (...) {

@@ -624,7 +624,7 @@ namespace tether::tui {
             void start_next_send() {
                 if (send_queue_.empty())
                     return;
-                const std::filesystem::path& path = send_queue_.front();
+                const auto& [path, target] = send_queue_.front();
                 // TRANSLATORS: {} is a file name.
                 std::string status = tr_format(_("Sending {}…"), path.filename().string());
                 if (send_batch_total_ > 1) {
@@ -634,7 +634,10 @@ namespace tether::tui {
                 }
                 action_note_ = status;
                 app::status(status);
-                app::send({{"command", "send_file"}, {"path", path.string()}});
+                json request{{"command", "send_file"}, {"path", path.string()}};
+                if (!target.empty())
+                    request["target"] = target;
+                app::send(request);
             }
 
             // Space-separated paths; a backslash escapes a space in a name.
@@ -690,8 +693,11 @@ namespace tether::tui {
                     send_batch_total_ += files.size();
                     send_skipped_ += skipped;
                 }
+                // The selected Wi-Fi device, or every connected one when none is selected.
+                const std::string target =
+                    selected_.rfind(WIFI_PREFIX, 0) == 0 ? selected_.substr(WIFI_PREFIX.size()) : std::string{};
                 for (auto& path : files)
-                    send_queue_.push_back(std::move(path));
+                    send_queue_.emplace_back(std::move(path), target);
                 if (idle)
                     start_next_send();
             }
@@ -1174,7 +1180,7 @@ namespace tether::tui {
             std::string bt_operation_id_;
 
             // Files waiting to go to the phone, front is in flight.
-            std::deque<std::filesystem::path> send_queue_;
+            std::deque<std::pair<std::filesystem::path, std::string>> send_queue_; // path, target fp
             size_t send_batch_total_ = 0;
             size_t send_failed_ = 0;
             size_t send_skipped_ = 0;
