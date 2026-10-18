@@ -875,7 +875,7 @@ TEST(ProfileSupervisor, RepeatedHoldIsIdempotent) {
     EXPECT_EQ(ops.removed.size(), 2u);
     sup.tick(1, true);
     EXPECT_EQ(ops.map_attempts + ops.pbap_attempts, 2);
-    EXPECT_NE(sup.status().reason.find("locked"), std::string::npos);
+    EXPECT_NE(sup.status().reason.find("idle"), std::string::npos);
 }
 
 // iOS routinely keeps an LE link while letting BR/EDR lapse. ANCS rides LE

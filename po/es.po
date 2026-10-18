@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-22\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Spanish\n"
@@ -119,14 +119,18 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "Bloquear la sesión cuando el iPhone quede fuera de alcance: on u off."
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "Liberar mensajes y contactos mientras este ordenador está bloqueado: on u off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Liberar mensajes y contactos mientras este ordenador está bloqueado o inactivo: on u off."
 
 #: src/cli/main.cpp
 msgid ""
 "Release a profile for another computer until claimed: map, pbap, ancs, or "
 "all."
-msgstr "Liberar un perfil para otro ordenador hasta recuperarlo: map, pbap, ancs o all."
+msgstr ""
+"Liberar un perfil para otro ordenador hasta recuperarlo: map, pbap, ancs o "
+"all."
 
 #: src/cli/main.cpp
 msgid "Take back a released profile: map, pbap, ancs, or all."
@@ -606,12 +610,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "El bloqueo cuando el iPhone queda fuera de alcance está desactivado."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "Los mensajes y contactos se liberarán mientras este ordenador esté bloqueado."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Los mensajes y contactos se liberarán mientras este ordenador esté bloqueado o inactivo."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "Los mensajes y contactos siguen conectados mientras este ordenador está bloqueado."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Los mensajes y contactos siguen conectados mientras este ordenador está bloqueado o inactivo."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -1695,11 +1701,10 @@ msgstr "Esperando al iPhone."
 msgid "Messages and contacts"
 msgstr "Mensajes y contactos"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "Liberado mientras este ordenador está bloqueado: {}."
+msgid "{} released while this computer is locked or idle."
+msgstr "Liberado mientras este ordenador está bloqueado o inactivo: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2493,15 +2498,19 @@ msgid "Release notifications"
 msgstr "Liberar notificaciones"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "Liberar mensajes y contactos mientras este ordenador está bloqueado"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Liberar mensajes y contactos mientras este ordenador está bloqueado o inactivo"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "El iPhone sirve los mensajes a un solo ordenador a la vez. Liberarlos permite que otro ordenador los tome; desmarcar vuelve a intentarlo, pero no puede quitárselos a un ordenador que todavía los tiene. Las liberaciones duran hasta que tetherd se reinicia."
+msgstr ""
+"El iPhone sirve los mensajes a un solo ordenador a la vez. Liberarlos "
+"permite que otro ordenador los tome; desmarcar vuelve a intentarlo, pero no "
+"puede quitárselos a un ordenador que todavía los tiene. Las liberaciones "
+"duran hasta que tetherd se reinicia."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

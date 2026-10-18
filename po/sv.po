@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Swedish\n"
@@ -117,14 +117,18 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "Lås sessionen när iPhonen hamnar utom räckhåll: on eller off."
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "Släpp meddelanden och kontakter medan den här datorn är låst: on eller off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Släpp meddelanden och kontakter medan den här datorn är låst eller inaktiv: on eller off."
 
 #: src/cli/main.cpp
 msgid ""
 "Release a profile for another computer until claimed: map, pbap, ancs, or "
 "all."
-msgstr "Släpp en profil till en annan dator tills den tas tillbaka: map, pbap, ancs eller all."
+msgstr ""
+"Släpp en profil till en annan dator tills den tas tillbaka: map, pbap, ancs "
+"eller all."
 
 #: src/cli/main.cpp
 msgid "Take back a released profile: map, pbap, ancs, or all."
@@ -600,12 +604,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "Låsning när iPhonen hamnar utom räckhåll är avstängd."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "Meddelanden och kontakter släpps medan den här datorn är låst."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Meddelanden och kontakter släpps medan den här datorn är låst eller inaktiv."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "Meddelanden och kontakter förblir anslutna medan den här datorn är låst."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Meddelanden och kontakter förblir anslutna medan den här datorn är låst eller inaktiv."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -1670,11 +1676,10 @@ msgstr "Väntar på iPhonen."
 msgid "Messages and contacts"
 msgstr "Meddelanden och kontakter"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "Släppt medan den här datorn är låst: {}."
+msgid "{} released while this computer is locked or idle."
+msgstr "Släppt medan den här datorn är låst eller inaktiv: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2456,15 +2461,18 @@ msgid "Release notifications"
 msgstr "Släpp aviseringar"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "Släpp meddelanden och kontakter medan den här datorn är låst"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Släpp meddelanden och kontakter medan den här datorn är låst eller inaktiv"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "iPhonen levererar meddelanden till en dator i taget. Att släppa dem låter en annan dator ta över; att bocka ur försöker igen, men kan inte ta dem från en dator som fortfarande håller dem. Släpp gäller tills tetherd startas om."
+msgstr ""
+"iPhonen levererar meddelanden till en dator i taget. Att släppa dem låter en "
+"annan dator ta över; att bocka ur försöker igen, men kan inte ta dem från en "
+"dator som fortfarande håller dem. Släpp gäller tills tetherd startas om."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

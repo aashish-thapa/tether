@@ -1,9 +1,12 @@
 #include "tether/wayland.hpp"
+#include "tether/bluetooth/config.hpp"
 #include "wayland_protocols/ext-data-control-v1.hpp"
+#include "wayland_protocols/ext-idle-notify-v1.hpp"
 #include "wayland_protocols/wayland.hpp"
 #include "wayland_protocols/wlr-data-control-unstable-v1.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <cstdlib>
 #include <cstring>
 #include <poll.h>
@@ -15,6 +18,12 @@
 namespace tether {
 
     WaylandContext* g_wayland = nullptr;
+
+    namespace {
+        std::atomic<bool> g_idle{false};
+    } // namespace
+
+    bool wayland_idle() { return g_idle; }
 
     WaylandContext::WaylandContext(EpollEventLoop& loop) : loop_(loop) {}
 
@@ -46,6 +55,10 @@ namespace tether {
             return;
         // Crucial: Destroy all regular proxies BEFORE disconnecting the display.
         clipboard_.reset();
+        idle_notification_.reset();
+        idle_notifier_.reset();
+        // A compositor that is gone cannot report the resume.
+        g_idle = false;
         ext_data_control_manager_.reset();
         wlr_data_control_manager_.reset();
         seat_.reset();
@@ -142,6 +155,9 @@ namespace tether {
             } else if (std::strcmp(interface, "ext_data_control_manager_v1") == 0) {
                 auto p = wl_registry_bind((wl_registry*)r->resource(), name, &ext_data_control_manager_v1_interface, 1);
                 ext_data_control_manager_ = std::make_unique<CCExtDataControlManagerV1>((wl_proxy*)p);
+            } else if (std::strcmp(interface, "ext_idle_notifier_v1") == 0) {
+                auto p = wl_registry_bind((wl_registry*)r->resource(), name, &ext_idle_notifier_v1_interface, 1);
+                idle_notifier_ = std::make_unique<CCExtIdleNotifierV1>((wl_proxy*)p);
             }
         });
 
@@ -153,6 +169,17 @@ namespace tether {
         if (!seat_) {
             debug::log(ERR, "WaylandContext: compositor exposes no wl_seat.");
             return false;
+        }
+
+        // Respects idle inhibitors, so a video playing here counts as in use.
+        if (idle_notifier_) {
+            const uint32_t timeout_ms = bluetooth::load_config().yield_idle_seconds * 1000u;
+            idle_notification_ = std::make_unique<CCExtIdleNotificationV1>(
+                idle_notifier_->sendGetIdleNotification(timeout_ms, (wl_proxy*)seat_->resource()));
+            idle_notification_->setIdled([](CCExtIdleNotificationV1*) { g_idle = true; });
+            idle_notification_->setResumed([](CCExtIdleNotificationV1*) { g_idle = false; });
+        } else {
+            debug::log(INFO, "WaylandContext: compositor has no ext_idle_notifier_v1; idle is read from logind only.");
         }
 
         // Prefer the standardized protocol; KWin only implements this one.

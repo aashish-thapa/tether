@@ -95,7 +95,7 @@ namespace tether::ui {
             GtkWidget* chk_bt_hold_map = nullptr;
             GtkWidget* chk_bt_hold_pbap = nullptr;
             GtkWidget* chk_bt_hold_ancs = nullptr;
-            GtkWidget* chk_bt_yield_locked = nullptr;
+            GtkWidget* chk_bt_yield_inactive = nullptr;
             GtkWidget* btn_bt_unpair = nullptr;
             std::string bt_operation_id;
 
@@ -191,7 +191,7 @@ namespace tether::ui {
 
         void on_bt_enabled_toggled(GtkWidget* widget, gpointer);
         void on_bt_hold_toggled(GtkWidget* widget, gpointer);
-        void on_bt_yield_locked_toggled(GtkWidget* widget, gpointer);
+        void on_bt_yield_inactive_toggled(GtkWidget* widget, gpointer);
 
         // set_active emits toggled, so programmatic writes are fenced from echoing back to the daemon.
         void set_check(GtkWidget* widget, gpointer handler, bool active) {
@@ -485,9 +485,9 @@ namespace tether::ui {
             set_check(g_devices.chk_bt_hold_map, hold, connection.value("map_held", false));
             set_check(g_devices.chk_bt_hold_pbap, hold, connection.value("pbap_held", false));
             set_check(g_devices.chk_bt_hold_ancs, hold, connection.value("ancs_held", false));
-            set_check(g_devices.chk_bt_yield_locked,
-                      reinterpret_cast<gpointer>(on_bt_yield_locked_toggled),
-                      g_devices.bt_status.value("yield_when_locked", false));
+            set_check(g_devices.chk_bt_yield_inactive,
+                      reinterpret_cast<gpointer>(on_bt_yield_inactive_toggled),
+                      g_devices.bt_status.value("yield_when_inactive", false));
         }
 
         void update_right_pane() {
@@ -677,8 +677,8 @@ namespace tether::ui {
                          {"held", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == TRUE}});
         }
 
-        void on_bt_yield_locked_toggled(GtkWidget* widget, gpointer) {
-            daemon_send({{"command", "bt_set_yield_when_locked"},
+        void on_bt_yield_inactive_toggled(GtkWidget* widget, gpointer) {
+            daemon_send({{"command", "bt_set_yield_when_inactive"},
                          {"enabled", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)) == TRUE}});
         }
 
@@ -1794,9 +1794,10 @@ namespace tether::ui {
         g_devices.chk_bt_hold_map = advanced_check(_("Release messages"), "map", hold);
         g_devices.chk_bt_hold_pbap = advanced_check(_("Release contacts"), "pbap", hold);
         g_devices.chk_bt_hold_ancs = advanced_check(_("Release notifications"), "ancs", hold);
-        g_devices.chk_bt_yield_locked = advanced_check(_("Release messages and contacts while this computer is locked"),
-                                                       nullptr,
-                                                       G_CALLBACK(on_bt_yield_locked_toggled));
+        g_devices.chk_bt_yield_inactive =
+            advanced_check(_("Release messages and contacts while this computer is locked or idle"),
+                           nullptr,
+                           G_CALLBACK(on_bt_yield_inactive_toggled));
         GtkWidget* advanced_note = gtk_label_new(_("The iPhone serves messages to one computer at a time. Releasing "
                                                    "lets another computer take them; unchecking retries, but cannot "
                                                    "take them from a computer that still holds them. Releases last "

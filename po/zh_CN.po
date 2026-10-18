@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Simplified Chinese\n"
@@ -113,8 +113,10 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "当 iPhone 超出范围时锁定会话：on 或 off。"
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "此电脑锁定时释放信息和通讯录：on 或 off。"
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "此电脑锁定或空闲时释放信息和通讯录：on 或 off。"
 
 #: src/cli/main.cpp
 msgid ""
@@ -574,12 +576,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "iPhone 超出范围时锁定已关闭。"
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "此电脑锁定时将释放信息和通讯录。"
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "此电脑锁定或空闲时将释放信息和通讯录。"
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "此电脑锁定时信息和通讯录保持连接。"
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "此电脑锁定或空闲时信息和通讯录保持连接。"
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -1601,11 +1605,10 @@ msgstr "正在等待 iPhone。"
 msgid "Messages and contacts"
 msgstr "信息和通讯录"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "此电脑锁定期间已释放：{}。"
+msgid "{} released while this computer is locked or idle."
+msgstr "此电脑锁定或空闲期间已释放：{}。"
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2370,15 +2373,17 @@ msgid "Release notifications"
 msgstr "释放通知"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "此电脑锁定时释放信息和通讯录"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "此电脑锁定或空闲时释放信息和通讯录"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "iPhone 一次只向一台电脑提供信息。释放后其他电脑可以接管；取消勾选会重试，但无法从仍占用它们的电脑那里取回。释放状态持续到 tetherd 重启。"
+msgstr ""
+"iPhone 一次只向一台电脑提供信息。释放后其他电脑可以接管；取消勾选会重试，但无"
+"法从仍占用它们的电脑那里取回。释放状态持续到 tetherd 重启。"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

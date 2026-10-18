@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Korean\n"
@@ -115,14 +115,18 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "iPhone이 범위를 벗어나면 세션을 잠급니다: on 또는 off."
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "이 컴퓨터가 잠겨 있는 동안 메시지와 연락처를 해제합니다: on 또는 off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "이 컴퓨터가 잠겨 있거나 유휴 상태인 동안 메시지와 연락처를 해제합니다: on 또는 off."
 
 #: src/cli/main.cpp
 msgid ""
 "Release a profile for another computer until claimed: map, pbap, ancs, or "
 "all."
-msgstr "다시 가져올 때까지 다른 컴퓨터를 위해 프로필을 해제합니다: map, pbap, ancs 또는 all."
+msgstr ""
+"다시 가져올 때까지 다른 컴퓨터를 위해 프로필을 해제합니다: map, pbap, ancs 또"
+"는 all."
 
 #: src/cli/main.cpp
 msgid "Take back a released profile: map, pbap, ancs, or all."
@@ -585,12 +589,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "iPhone이 범위를 벗어날 때 잠그는 기능이 꺼져 있습니다."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "이 컴퓨터가 잠겨 있는 동안 메시지와 연락처가 해제됩니다."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "이 컴퓨터가 잠겨 있거나 유휴 상태인 동안 메시지와 연락처가 해제됩니다."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "이 컴퓨터가 잠겨 있어도 메시지와 연락처는 연결된 상태로 유지됩니다."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "이 컴퓨터가 잠겨 있거나 유휴 상태여도 메시지와 연락처는 연결된 상태로 유지됩니다."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -604,7 +610,9 @@ msgstr "이 컴퓨터에서 해제됨: %s.\n"
 #: src/cli/main.cpp
 #, c-format
 msgid "Claiming %s. If another computer holds it, release it there first.\n"
-msgstr "%s을(를) 다시 가져오는 중입니다. 다른 컴퓨터가 사용 중이면 먼저 그쪽에서 해제하세요.\n"
+msgstr ""
+"%s을(를) 다시 가져오는 중입니다. 다른 컴퓨터가 사용 중이면 먼저 그쪽에서 해제"
+"하세요.\n"
 
 #: src/cli/main.cpp
 msgid "Daemon closed the connection before the operation finished.\n"
@@ -1640,11 +1648,10 @@ msgstr "iPhone을 기다리는 중입니다."
 msgid "Messages and contacts"
 msgstr "메시지와 연락처"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "이 컴퓨터가 잠겨 있는 동안 해제됨: {}."
+msgid "{} released while this computer is locked or idle."
+msgstr "이 컴퓨터가 잠겨 있거나 유휴 상태인 동안 해제됨: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2421,15 +2428,18 @@ msgid "Release notifications"
 msgstr "알림 해제"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "이 컴퓨터가 잠겨 있는 동안 메시지와 연락처 해제"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "이 컴퓨터가 잠겨 있거나 유휴 상태인 동안 메시지와 연락처 해제"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "iPhone은 한 번에 한 컴퓨터에만 메시지를 제공합니다. 해제하면 다른 컴퓨터가 가져갈 수 있습니다. 선택을 해제하면 다시 시도하지만, 아직 사용 중인 컴퓨터에서 가져올 수는 없습니다. 해제는 tetherd를 다시 시작할 때까지 유지됩니다."
+msgstr ""
+"iPhone은 한 번에 한 컴퓨터에만 메시지를 제공합니다. 해제하면 다른 컴퓨터가 가"
+"져갈 수 있습니다. 선택을 해제하면 다시 시도하지만, 아직 사용 중인 컴퓨터에서 "
+"가져올 수는 없습니다. 해제는 tetherd를 다시 시작할 때까지 유지됩니다."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

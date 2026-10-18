@@ -430,7 +430,7 @@ namespace tether {
         status["airpods_handoff"] = config.airpods_handoff;
         status["lock_on_away"] = config.lock_on_away;
         status["lock_away_seconds"] = config.lock_away_seconds;
-        status["yield_when_locked"] = config.yield_when_locked;
+        status["yield_when_inactive"] = config.yield_when_inactive;
         status["version"] = TETHER_VERSION;
         if (!bluetooth::g_bluez) {
             status["capability"] = nullptr;
@@ -1451,12 +1451,12 @@ namespace tether {
                             bluetooth::g_bt_connections->set_lock_on_away(config.lock_on_away,
                                                                           config.lock_away_seconds);
                         broadcast_local_event(build_bt_status().dump());
-                    } else if (j.contains("command") && j["command"] == "bt_set_yield_when_locked") {
+                    } else if (j.contains("command") && j["command"] == "bt_set_yield_when_inactive") {
                         auto config = bluetooth::load_config();
-                        config.yield_when_locked = j.value("enabled", false);
+                        config.yield_when_inactive = j.value("enabled", false);
                         bluetooth::save_config(config);
                         if (bluetooth::g_bt_connections)
-                            bluetooth::g_bt_connections->set_yield_when_locked(config.yield_when_locked);
+                            bluetooth::g_bt_connections->set_yield_when_inactive(config.yield_when_inactive);
                         broadcast_local_event(build_bt_status().dump());
                     } else if (j.contains("command") && j["command"] == "bt_hold" && j.contains("profile")) {
                         if (bluetooth::g_bt_connections &&

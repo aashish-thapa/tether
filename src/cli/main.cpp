@@ -200,7 +200,7 @@ static const Opt kOptions[] = {
     {"--bt-airpods-pause", N_("Pause local playback when an AirPod is removed: never, one-removed, both-removed.")},
     {"--bt-airpods-handoff", N_("Hand the AirPods to the iPhone during a call: on or off.")},
     {"--bt-lock-on-away", N_("Lock the session when the iPhone goes out of range: on or off.")},
-    {"--bt-yield-when-locked", N_("Release messages and contacts while this computer is locked: on or off.")},
+    {"--bt-yield-when-inactive", N_("Release messages and contacts while this computer is locked or idle: on or off.")},
     {"--bt-release", N_("Release a profile for another computer until claimed: map, pbap, ancs, or all.")},
     {"--bt-claim", N_("Take back a released profile: map, pbap, ancs, or all.")},
     {"--bt-threads", N_("List iPhone message conversations.")},
@@ -699,20 +699,20 @@ static int set_bt_lock_on_away(tether::Client& client, const std::string& value)
     return 0;
 }
 
-static int set_bt_yield_when_locked(tether::Client& client, const std::string& value) {
+static int set_bt_yield_when_inactive(tether::Client& client, const std::string& value) {
     if (value != "on" && value != "off") {
         debug::log(ERR, _("Use on or off.\n"));
         return 1;
     }
-    if (!client.send(nlohmann::json{{"command", "bt_set_yield_when_locked"}, {"enabled", value == "on"}}.dump() +
+    if (!client.send(nlohmann::json{{"command", "bt_set_yield_when_inactive"}, {"enabled", value == "on"}}.dump() +
                      "\n")) {
         debug::log(ERR, _("Could not reach the daemon.\n"));
         return 1;
     }
     fprintf(stdout,
             "%s\n",
-            value == "on" ? _("Messages and contacts will be released while this computer is locked.")
-                          : _("Messages and contacts stay connected while this computer is locked."));
+            value == "on" ? _("Messages and contacts will be released while this computer is locked or idle.")
+                          : _("Messages and contacts stay connected while this computer is locked or idle."));
     return 0;
 }
 
@@ -1387,8 +1387,8 @@ int main(int argc, char* argv[]) {
             action = "bt_lock_on_away";
             if (i + 1 < argc && argv[i + 1][0] != '-')
                 arg_val = argv[++i];
-        } else if (arg == "--bt-yield-when-locked") {
-            action = "bt_yield_when_locked";
+        } else if (arg == "--bt-yield-when-inactive") {
+            action = "bt_yield_when_inactive";
             if (i + 1 < argc && argv[i + 1][0] != '-')
                 arg_val = argv[++i];
         } else if (arg == "--bt-release" || arg == "--bt-claim") {
@@ -1665,8 +1665,8 @@ int main(int argc, char* argv[]) {
         return set_bt_airpods_handoff(client, arg_val);
     } else if (action == "bt_lock_on_away") {
         return set_bt_lock_on_away(client, arg_val);
-    } else if (action == "bt_yield_when_locked") {
-        return set_bt_yield_when_locked(client, arg_val);
+    } else if (action == "bt_yield_when_inactive") {
+        return set_bt_yield_when_inactive(client, arg_val);
     } else if (action == "bt_release" || action == "bt_claim") {
         return set_bt_hold(client, arg_val, action == "bt_release");
     } else if (action == "bt_diagnostics") {

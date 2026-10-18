@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Turkish\n"
@@ -115,14 +115,18 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "iPhone menzil dışına çıkınca oturumu kilitle: on veya off."
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "Bu bilgisayar kilitliyken mesajları ve kişileri bırak: on veya off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Bu bilgisayar kilitli veya boştayken mesajları ve kişileri bırak: on veya off."
 
 #: src/cli/main.cpp
 msgid ""
 "Release a profile for another computer until claimed: map, pbap, ancs, or "
 "all."
-msgstr "Geri alınana kadar bir profili başka bir bilgisayar için bırak: map, pbap, ancs veya all."
+msgstr ""
+"Geri alınana kadar bir profili başka bir bilgisayar için bırak: map, pbap, "
+"ancs veya all."
 
 #: src/cli/main.cpp
 msgid "Take back a released profile: map, pbap, ancs, or all."
@@ -599,12 +603,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "iPhone menzil dışına çıkınca kilitleme kapalı."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "Bu bilgisayar kilitliyken mesajlar ve kişiler bırakılacak."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Bu bilgisayar kilitli veya boştayken mesajlar ve kişiler bırakılacak."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "Bu bilgisayar kilitliyken mesajlar ve kişiler bağlı kalır."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Bu bilgisayar kilitli veya boştayken mesajlar ve kişiler bağlı kalır."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -1669,11 +1675,10 @@ msgstr "iPhone bekleniyor."
 msgid "Messages and contacts"
 msgstr "Mesajlar ve kişiler"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "Bu bilgisayar kilitliyken bırakıldı: {}."
+msgid "{} released while this computer is locked or idle."
+msgstr "Bu bilgisayar kilitli veya boştayken bırakıldı: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2452,15 +2457,19 @@ msgid "Release notifications"
 msgstr "Bildirimleri bırak"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "Bu bilgisayar kilitliyken mesajları ve kişileri bırak"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Bu bilgisayar kilitli veya boştayken mesajları ve kişileri bırak"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "iPhone mesajları aynı anda yalnızca bir bilgisayara sunar. Bırakmak başka bir bilgisayarın onları almasını sağlar; işareti kaldırmak yeniden dener, ancak hâlâ tutan bir bilgisayardan alamaz. Bırakmalar tetherd yeniden başlayana kadar geçerlidir."
+msgstr ""
+"iPhone mesajları aynı anda yalnızca bir bilgisayara sunar. Bırakmak başka "
+"bir bilgisayarın onları almasını sağlar; işareti kaldırmak yeniden dener, "
+"ancak hâlâ tutan bir bilgisayardan alamaz. Bırakmalar tetherd yeniden "
+"başlayana kadar geçerlidir."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

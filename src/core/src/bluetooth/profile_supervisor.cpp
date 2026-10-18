@@ -148,8 +148,8 @@ namespace tether::bluetooth {
         next_attempt_ = 0;
     }
 
-    void ProfileSupervisor::set_held(bool map, bool pbap, bool by_lock) {
-        held_by_lock_ = by_lock;
+    void ProfileSupervisor::set_held(bool map, bool pbap, bool by_inactivity) {
+        held_by_inactivity_ = by_inactivity;
         if (map != status_.map_held) {
             status_.map_held = map;
             if (map) {
@@ -233,8 +233,9 @@ namespace tether::bluetooth {
                                       : status_.map_held                    ? _("Messages")
                                                                             : _("Contacts");
             // TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
-            status_.reason = held_by_lock_ ? tr_format(_("{} released while this computer is locked."), names)
-                                           : tr_format(_("{} released on this computer."), names);
+            status_.reason = held_by_inactivity_
+                                 ? tr_format(_("{} released while this computer is locked or idle."), names)
+                                 : tr_format(_("{} released on this computer."), names);
         } else if (status_.map_open && status_.pbap_open) {
             status_.reason = _("Messages and contacts are connected.");
         } else if (!status_.map_open && status_.map_error != ObexError::None) {

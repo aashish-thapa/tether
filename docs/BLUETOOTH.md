@@ -906,10 +906,14 @@ The iPhone serves one MAP session at a time. Any other program on any machine ho
 **Two computers, one iPhone.** Whichever Tether opens MAP first keeps it, and the other polls
 with `busy` until the phone leaves the first one's range. To hand it over:
 
-- "Release messages and contacts while this computer is locked"
-  (`tether --bt-yield-when-locked on`): a locked computer drops MAP and PBAP, and the unlocked
-  one picks them up within about 15 s. Turn it on on both. It reads logind's `LockedHint`, so a
-  locker that does not set it never yields.
+- "Release messages and contacts while this computer is locked or idle"
+  (`tether --bt-yield-when-inactive on`): a locked or idle computer drops MAP and PBAP, and the
+  one in use picks them up within about 15 s. Turn it on on both. A computer is inactive when
+  any of these says so: logind's `LockedHint`, logind's `IdleHint` (set by gnome-session), or
+  the compositor's `ext-idle-notify-v1` (wlroots, Hyprland, sway, KWin). The compositor timeout
+  is `yield_idle_seconds` in `bluetooth.json`: 300 by default, no less than 30, and read when
+  `tetherd` connects to the compositor. It respects idle inhibitors, so a playing video counts
+  as in use.
 - Release by hand: `tether --bt-release map|pbap|ancs|all`, undone with `--bt-claim`. In the apps
   it is under Devices > Bluetooth > Advanced. Releases are not saved, so restarting `tetherd`
   claims everything again. Claiming only retries. The other computer has to release first.

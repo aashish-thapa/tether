@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether 0.2.38\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,7 +113,9 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr ""
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
 msgstr ""
 
 #: src/cli/main.cpp
@@ -547,11 +549,13 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr ""
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
 msgstr ""
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
 msgstr ""
 
 #: src/cli/main.cpp
@@ -1491,10 +1495,9 @@ msgstr ""
 msgid "Messages and contacts"
 msgstr ""
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
+msgid "{} released while this computer is locked or idle."
 msgstr ""
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
@@ -2224,7 +2227,7 @@ msgid "Release notifications"
 msgstr ""
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
+msgid "Release messages and contacts while this computer is locked or idle"
 msgstr ""
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp

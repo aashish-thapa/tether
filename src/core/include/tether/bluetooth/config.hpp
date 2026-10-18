@@ -7,6 +7,10 @@
 
 namespace tether::bluetooth {
 
+    // How long without input before an idle session releases MAP and PBAP, and its floor.
+    inline constexpr int YIELD_IDLE_SECONDS = 300;
+    inline constexpr int MIN_YIELD_IDLE_SECONDS = 30;
+
     // Which pairing transaction to run.
     //
     // ConnectFirst calls Device1.Connect() on the unpaired device and lets iOS
@@ -61,8 +65,10 @@ namespace tether::bluetooth {
         bool lock_on_away = false;
         // How long every bearer must stay down before the session is locked.
         int lock_away_seconds = AWAY_LOCK_GRACE_SECONDS;
-        // Whether a locked session releases MAP and PBAP for another computer.
-        bool yield_when_locked = false;
+        // Whether a locked or idle session releases MAP and PBAP for another computer.
+        bool yield_when_inactive = false;
+        // Seconds without input before the compositor reports the session idle.
+        int yield_idle_seconds = YIELD_IDLE_SECONDS;
         // What performs the lock. Empty uses logind.
         std::string lock_command;
 

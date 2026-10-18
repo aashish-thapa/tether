@@ -424,7 +424,7 @@ Broadcast when the published state actually changes, not on a timer.
 The two `*_reason` strings are written for display (permission is off or a transport that is busy). 
 `map_error` and `pbap_error` name the classification: `forbidden` means the toggle on the phone is off,
 `busy` means another computer holds the phone's single MAP session.
-`*_held` means the profile is released on this computer, by hand or because the session is locked.
+`*_held` means the profile is released on this computer, by hand or because the session is locked or idle.
 
 #### `bt_hold` (Client -> Daemon, broadcast)
 **Payload**: `{"command": "bt_hold", "profile": "map", "held": true}`
@@ -432,10 +432,10 @@ Releases (`held: true`) or reclaims a profile on this computer: `map`, `pbap`, `
 Not persisted; a daemon restart reclaims everything. Reclaiming retries the session, it cannot
 take MAP from another computer that holds it. Answered with a `bt_status` broadcast.
 
-#### `bt_set_yield_when_locked` (Client -> Daemon, broadcast)
-**Payload**: `{"command": "bt_set_yield_when_locked", "enabled": true}`
-Persisted. While logind reports the session locked, MAP and PBAP are released so another
-computer can take them. Reported as `yield_when_locked` in `bt_status`.
+#### `bt_set_yield_when_inactive` (Client -> Daemon, broadcast)
+**Payload**: `{"command": "bt_set_yield_when_inactive", "enabled": true}`
+Persisted. While the session is locked or idle, MAP and PBAP are released so another
+computer can take them. Reported as `yield_when_inactive` in `bt_status`.
 
 ### AirPods
 

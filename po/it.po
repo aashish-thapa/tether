@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Italian\n"
@@ -120,14 +120,18 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "Blocca la sessione quando l'iPhone esce dalla portata: on oppure off."
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "Rilascia messaggi e contatti mentre questo computer è bloccato: on o off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Rilascia messaggi e contatti mentre questo computer è bloccato o inattivo: on o off."
 
 #: src/cli/main.cpp
 msgid ""
 "Release a profile for another computer until claimed: map, pbap, ancs, or "
 "all."
-msgstr "Rilascia un profilo per un altro computer finché non viene ripreso: map, pbap, ancs o all."
+msgstr ""
+"Rilascia un profilo per un altro computer finché non viene ripreso: map, "
+"pbap, ancs o all."
 
 #: src/cli/main.cpp
 msgid "Take back a released profile: map, pbap, ancs, or all."
@@ -605,12 +609,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "Il blocco quando l'iPhone esce dalla portata è disattivato."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "Messaggi e contatti verranno rilasciati mentre questo computer è bloccato."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Messaggi e contatti verranno rilasciati mentre questo computer è bloccato o inattivo."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "Messaggi e contatti restano connessi mentre questo computer è bloccato."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Messaggi e contatti restano connessi mentre questo computer è bloccato o inattivo."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -1693,11 +1699,10 @@ msgstr "In attesa dell'iPhone."
 msgid "Messages and contacts"
 msgstr "Messaggi e contatti"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "Rilasciato mentre questo computer è bloccato: {}."
+msgid "{} released while this computer is locked or idle."
+msgstr "Rilasciato mentre questo computer è bloccato o inattivo: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2490,15 +2495,19 @@ msgid "Release notifications"
 msgstr "Rilascia notifiche"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "Rilascia messaggi e contatti mentre questo computer è bloccato"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Rilascia messaggi e contatti mentre questo computer è bloccato o inattivo"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "L'iPhone fornisce i messaggi a un solo computer alla volta. Rilasciarli permette a un altro computer di prenderli; togliere la spunta riprova, ma non può toglierli a un computer che li tiene ancora. I rilasci durano fino al riavvio di tetherd."
+msgstr ""
+"L'iPhone fornisce i messaggi a un solo computer alla volta. Rilasciarli "
+"permette a un altro computer di prenderli; togliere la spunta riprova, ma "
+"non può toglierli a un computer che li tiene ancora. I rilasci durano fino "
+"al riavvio di tetherd."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

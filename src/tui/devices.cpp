@@ -1034,11 +1034,12 @@ namespace tether::tui {
                         rows.push_back(hold_row(_("Release messages"), "map", "map_held"));
                         rows.push_back(hold_row(_("Release contacts"), "pbap", "pbap_held"));
                         rows.push_back(hold_row(_("Release notifications"), "ancs", "ancs_held"));
-                        const bool yield = bt_status_.value("yield_when_locked", false);
+                        const bool yield = bt_status_.value("yield_when_inactive", false);
                         rows.push_back(toggle_row(
-                            _("Release messages and contacts while this computer is locked"), yield, true, [yield] {
-                                app::send({{"command", "bt_set_yield_when_locked"}, {"enabled", !yield}});
-                            }));
+                            _("Release messages and contacts while this computer is locked or idle"),
+                            yield,
+                            true,
+                            [yield] { app::send({{"command", "bt_set_yield_when_inactive"}, {"enabled", !yield}}); }));
                         rows.push_back(text_row(_("The iPhone serves messages to one computer at a time. Releasing "
                                                   "lets another computer take them; unchecking retries, but cannot "
                                                   "take them from a computer that still holds them. Releases last "

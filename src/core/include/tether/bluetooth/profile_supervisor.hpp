@@ -83,8 +83,8 @@ namespace tether::bluetooth {
         void drop_map();
 
         // A held profile has its session removed and is not reopened until the
-        // hold is lifted. `by_lock` only changes the reason shown.
-        void set_held(bool map, bool pbap, bool by_lock);
+        // hold is lifted. `by_inactivity` only changes the reason shown.
+        void set_held(bool map, bool pbap, bool by_inactivity);
 
         const ProfileStatus& status() const { return status_; }
         const std::string& map_session() const { return map_path_; }
@@ -101,7 +101,7 @@ namespace tether::bluetooth {
         bool pbap_retried_ = false;
         int64_t next_attempt_ = 0;
         bool opened_once_ = false;
-        bool held_by_lock_ = false;
+        bool held_by_inactivity_ = false;
     };
 
 } // namespace tether::bluetooth

@@ -692,8 +692,8 @@ namespace tether::bluetooth {
         std::atomic<bool> hold_map{false};
         std::atomic<bool> hold_pbap{false};
         std::atomic<bool> hold_ancs{false};
-        // Whether a locked session releases MAP and PBAP.
-        std::atomic<bool> yield_when_locked{false};
+        // Whether a locked or idle session releases MAP and PBAP.
+        std::atomic<bool> yield_when_inactive{false};
         // When the last path to the phone went down, -1 while any is up.
         int64_t gone_since = -1;
         // Whether the away lock has already fired for this absence.
@@ -1389,8 +1389,8 @@ namespace tether::bluetooth {
             }
             link_was_ready = link_ready;
 
-            const bool locked = yield_when_locked.load() && session_locked();
-            profiles->set_held(hold_map.load() || locked, hold_pbap.load() || locked, locked);
+            const bool inactive = yield_when_inactive.load() && session_inactive();
+            profiles->set_held(hold_map.load() || inactive, hold_pbap.load() || inactive, inactive);
             profiles->tick(now, bearers->status().device_paired);
 
             const auto& bearer = bearers->status();
@@ -1450,7 +1450,7 @@ namespace tether::bluetooth {
         state_->calls_wanted = config.calls_enabled;
         state_->lock_on_away = config.lock_on_away;
         state_->lock_away_seconds = config.lock_away_seconds;
-        state_->yield_when_locked = config.yield_when_locked;
+        state_->yield_when_inactive = config.yield_when_inactive;
         // Read the controller's capability here rather than letting each caller
         // latch its own copy. At startup BlueZ may not have finished enumerating
         // the adapter, and its free advertising-instance count drops to zero
@@ -1602,7 +1602,7 @@ namespace tether::bluetooth {
         return true;
     }
 
-    void ConnectionManager::set_yield_when_locked(bool enabled) { state_->yield_when_locked = enabled; }
+    void ConnectionManager::set_yield_when_inactive(bool enabled) { state_->yield_when_inactive = enabled; }
 
     void ConnectionManager::set_lock_on_away(bool enabled, int grace_seconds) {
         state_->lock_on_away = enabled;

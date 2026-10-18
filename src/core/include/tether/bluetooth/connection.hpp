@@ -60,8 +60,8 @@ namespace tether::bluetooth {
         // False for an unknown profile.
         bool set_hold(const std::string& profile, bool held);
 
-        // Whether a locked session releases MAP and PBAP for another computer.
-        void set_yield_when_locked(bool enabled);
+        // Whether a locked or idle session releases MAP and PBAP for another computer.
+        void set_yield_when_inactive(bool enabled);
 
         // Invokes a mirrored notification's action.
         bool perform_notification_action(uint32_t uid, ancs::ActionId action);

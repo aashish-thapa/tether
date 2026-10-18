@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-22\n"
 "Last-Translator: Tether project\n"
 "Language-Team: French\n"
@@ -119,14 +119,18 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "Verrouiller la session quand l'iPhone sort de portée : on ou off."
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "Libérer les messages et les contacts quand cet ordinateur est verrouillé : on ou off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Libérer les messages et les contacts quand cet ordinateur est verrouillé ou inactif : on ou off."
 
 #: src/cli/main.cpp
 msgid ""
 "Release a profile for another computer until claimed: map, pbap, ancs, or "
 "all."
-msgstr "Libérer un profil pour un autre ordinateur jusqu'à sa reprise : map, pbap, ancs ou all."
+msgstr ""
+"Libérer un profil pour un autre ordinateur jusqu'à sa reprise : map, pbap, "
+"ancs ou all."
 
 #: src/cli/main.cpp
 msgid "Take back a released profile: map, pbap, ancs, or all."
@@ -606,12 +610,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "Le verrouillage quand l'iPhone sort de portée est désactivé."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "Les messages et les contacts seront libérés quand cet ordinateur est verrouillé."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Les messages et les contacts seront libérés quand cet ordinateur est verrouillé ou inactif."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "Les messages et les contacts restent connectés quand cet ordinateur est verrouillé."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Les messages et les contacts restent connectés quand cet ordinateur est verrouillé ou inactif."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -625,7 +631,9 @@ msgstr "Libéré sur cet ordinateur : %s.\n"
 #: src/cli/main.cpp
 #, c-format
 msgid "Claiming %s. If another computer holds it, release it there first.\n"
-msgstr "Reprise de %s. Si un autre ordinateur le détient, libérez-le d'abord là-bas.\n"
+msgstr ""
+"Reprise de %s. Si un autre ordinateur le détient, libérez-le d'abord là-"
+"bas.\n"
 
 #: src/cli/main.cpp
 msgid "Daemon closed the connection before the operation finished.\n"
@@ -1699,11 +1707,10 @@ msgstr "En attente de l'iPhone."
 msgid "Messages and contacts"
 msgstr "Messages et contacts"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "Libéré tant que cet ordinateur est verrouillé : {}."
+msgid "{} released while this computer is locked or idle."
+msgstr "Libéré tant que cet ordinateur est verrouillé ou inactif : {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2497,15 +2504,19 @@ msgid "Release notifications"
 msgstr "Libérer les notifications"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "Libérer les messages et les contacts quand cet ordinateur est verrouillé"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Libérer les messages et les contacts quand cet ordinateur est verrouillé ou inactif"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "L'iPhone ne sert les messages qu'à un seul ordinateur à la fois. Les libérer permet à un autre ordinateur de les prendre ; décocher réessaie, mais ne peut pas les reprendre à un ordinateur qui les détient encore. Les libérations durent jusqu'au redémarrage de tetherd."
+msgstr ""
+"L'iPhone ne sert les messages qu'à un seul ordinateur à la fois. Les libérer "
+"permet à un autre ordinateur de les prendre ; décocher réessaie, mais ne "
+"peut pas les reprendre à un ordinateur qui les détient encore. Les "
+"libérations durent jusqu'au redémarrage de tetherd."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

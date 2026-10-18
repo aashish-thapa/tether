@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 10:15-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Polish\n"
@@ -117,14 +117,18 @@ msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "Zablokuj sesję, gdy iPhone znajdzie się poza zasięgiem: on lub off."
 
 #: src/cli/main.cpp
-msgid "Release messages and contacts while this computer is locked: on or off."
-msgstr "Zwalniaj wiadomości i kontakty, gdy ten komputer jest zablokowany: on lub off."
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Zwalniaj wiadomości i kontakty, gdy ten komputer jest zablokowany lub bezczynny: on lub off."
 
 #: src/cli/main.cpp
 msgid ""
 "Release a profile for another computer until claimed: map, pbap, ancs, or "
 "all."
-msgstr "Zwolnij profil dla innego komputera do czasu przejęcia: map, pbap, ancs lub all."
+msgstr ""
+"Zwolnij profil dla innego komputera do czasu przejęcia: map, pbap, ancs lub "
+"all."
 
 #: src/cli/main.cpp
 msgid "Take back a released profile: map, pbap, ancs, or all."
@@ -605,12 +609,14 @@ msgid "Locking on the iPhone going out of range is off."
 msgstr "Blokowanie, gdy iPhone znajdzie się poza zasięgiem, jest wyłączone."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts will be released while this computer is locked."
-msgstr "Wiadomości i kontakty będą zwalniane, gdy ten komputer jest zablokowany."
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Wiadomości i kontakty będą zwalniane, gdy ten komputer jest zablokowany lub bezczynny."
 
 #: src/cli/main.cpp
-msgid "Messages and contacts stay connected while this computer is locked."
-msgstr "Wiadomości i kontakty pozostają połączone, gdy ten komputer jest zablokowany."
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Wiadomości i kontakty pozostają połączone, gdy ten komputer jest zablokowany lub bezczynny."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -624,7 +630,8 @@ msgstr "Zwolniono na tym komputerze: %s.\n"
 #: src/cli/main.cpp
 #, c-format
 msgid "Claiming %s. If another computer holds it, release it there first.\n"
-msgstr "Przejmowanie %s. Jeśli trzyma go inny komputer, najpierw zwolnij go tam.\n"
+msgstr ""
+"Przejmowanie %s. Jeśli trzyma go inny komputer, najpierw zwolnij go tam.\n"
 
 #: src/cli/main.cpp
 msgid "Daemon closed the connection before the operation finished.\n"
@@ -1685,11 +1692,10 @@ msgstr "Oczekiwanie na iPhone'a."
 msgid "Messages and contacts"
 msgstr "Wiadomości i kontakty"
 
-#. TRANSLATORS: {} is Messages, Contacts, or Messages and contacts.
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
-msgid "{} released while this computer is locked."
-msgstr "Zwolnione, gdy ten komputer jest zablokowany: {}."
+msgid "{} released while this computer is locked or idle."
+msgstr "Zwolnione, gdy ten komputer jest zablokowany lub bezczynny: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 #, c++-format
@@ -2476,15 +2482,19 @@ msgid "Release notifications"
 msgstr "Zwolnij powiadomienia"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
-msgid "Release messages and contacts while this computer is locked"
-msgstr "Zwalniaj wiadomości i kontakty, gdy ten komputer jest zablokowany"
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Zwalniaj wiadomości i kontakty, gdy ten komputer jest zablokowany lub bezczynny"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
 "The iPhone serves messages to one computer at a time. Releasing lets another "
 "computer take them; unchecking retries, but cannot take them from a computer "
 "that still holds them. Releases last until tetherd restarts."
-msgstr "iPhone udostępnia wiadomości tylko jednemu komputerowi naraz. Zwolnienie pozwala przejąć je innemu komputerowi; odznaczenie ponawia próbę, ale nie odbierze ich komputerowi, który nadal je trzyma. Zwolnienia obowiązują do ponownego uruchomienia tetherd."
+msgstr ""
+"iPhone udostępnia wiadomości tylko jednemu komputerowi naraz. Zwolnienie "
+"pozwala przejąć je innemu komputerowi; odznaczenie ponawia próbę, ale nie "
+"odbierze ich komputerowi, który nadal je trzyma. Zwolnienia obowiązują do "
+"ponownego uruchomienia tetherd."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"
