@@ -55,6 +55,14 @@ namespace tether::bluetooth {
         // Whether the session locks when the phone drops out of range.
         void set_lock_on_away(bool enabled, int grace_seconds);
 
+        // Releases or reclaims a profile on this computer: map, pbap, ancs, or all.
+        // Reclaiming retries; it cannot take MAP from another computer holding it.
+        // False for an unknown profile.
+        bool set_hold(const std::string& profile, bool held);
+
+        // Whether a locked or idle session releases MAP and PBAP for another computer.
+        void set_yield_when_inactive(bool enabled);
+
         // Invokes a mirrored notification's action.
         bool perform_notification_action(uint32_t uid, ancs::ActionId action);
 

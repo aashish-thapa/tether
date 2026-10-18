@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-17 16:11-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Czech\n"
@@ -114,6 +114,24 @@ msgstr "Předat AirPods iPhonu během hovoru: on nebo off."
 #: src/cli/main.cpp
 msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "Zamknout relaci, když iPhone opustí dosah: on nebo off."
+
+#: src/cli/main.cpp
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Uvolnit zprávy a kontakty, když je tento počítač zamčený nebo nečinný: on nebo off."
+
+#: src/cli/main.cpp
+msgid ""
+"Release a profile for another computer until claimed: map, pbap, ancs, or "
+"all."
+msgstr ""
+"Uvolnit profil pro jiný počítač, dokud nebude znovu převzat: map, pbap, ancs "
+"nebo all."
+
+#: src/cli/main.cpp
+msgid "Take back a released profile: map, pbap, ancs, or all."
+msgstr "Převzít zpět uvolněný profil: map, pbap, ancs nebo all."
 
 #: src/cli/main.cpp
 msgid "List iPhone message conversations."
@@ -583,6 +601,30 @@ msgstr "Relace se zamkne, když iPhone opustí dosah."
 #: src/cli/main.cpp
 msgid "Locking on the iPhone going out of range is off."
 msgstr "Zamykání při opuštění dosahu iPhonem je vypnuté."
+
+#: src/cli/main.cpp
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Zprávy a kontakty budou uvolněny, když je tento počítač zamčený nebo nečinný."
+
+#: src/cli/main.cpp
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Zprávy a kontakty zůstanou připojené, i když je tento počítač zamčený nebo nečinný."
+
+#: src/cli/main.cpp
+msgid "Use map, pbap, ancs, or all.\n"
+msgstr "Použijte map, pbap, ancs nebo all.\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Released %s on this computer.\n"
+msgstr "Na tomto počítači uvolněno: %s.\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Claiming %s. If another computer holds it, release it there first.\n"
+msgstr "Přebírám %s. Pokud ho drží jiný počítač, uvolněte ho nejprve tam.\n"
 
 #: src/cli/main.cpp
 msgid "Daemon closed the connection before the operation finished.\n"
@@ -1372,7 +1414,10 @@ msgid ""
 "If every attempt gives a BR/EDR-only bond, this controller may not support "
 "Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
 "pair again."
-msgstr "Pokud každý pokus skončí párováním jen přes BR/EDR, tento řadič možná nepodporuje Secure Connections na BR/EDR; zkuste jiný pomocí tether --bt-adapter {} a spárujte znovu."
+msgstr ""
+"Pokud každý pokus skončí párováním jen přes BR/EDR, tento řadič možná "
+"nepodporuje Secure Connections na BR/EDR; zkuste jiný pomocí tether --bt-"
+"adapter {} a spárujte znovu."
 
 #: src/core/src/bluetooth/objects.cpp
 msgid ""
@@ -1625,6 +1670,20 @@ msgstr "{} se nepodařilo otevřít."
 #: src/gtk/notifications_view.cpp src/tui/notifications.cpp
 msgid "Waiting for the iPhone."
 msgstr "Čeká se na iPhone."
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+msgid "Messages and contacts"
+msgstr "Zprávy a kontakty"
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released while this computer is locked or idle."
+msgstr "Uvolněno, dokud je tento počítač zamčený nebo nečinný: {}."
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released on this computer."
+msgstr "Uvolněno na tomto počítači: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 msgid "Messages and contacts are connected."
@@ -2384,6 +2443,37 @@ msgstr ""
 "Udržuje Bluetooth spojení s iPhonem a znovu se připojí, kdykoli spadne. "
 "Vypnutím Tether přestane obnovovat spojení; spojení, které už běží, zůstane "
 "až do jeho odpojení."
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Advanced"
+msgstr "Pokročilé"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages"
+msgstr "Uvolnit zprávy"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release contacts"
+msgstr "Uvolnit kontakty"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release notifications"
+msgstr "Uvolnit oznámení"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Uvolnit zprávy a kontakty, když je tento počítač zamčený nebo nečinný"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid ""
+"The iPhone serves messages to one computer at a time. Releasing lets another "
+"computer take them; unchecking retries, but cannot take them from a computer "
+"that still holds them. Releases last until tetherd restarts."
+msgstr ""
+"iPhone poskytuje zprávy vždy jen jednomu počítači. Uvolnění je umožní "
+"převzít jinému počítači; zrušení zaškrtnutí zkusí připojení znovu, ale "
+"nemůže je převzít od počítače, který je stále drží. Uvolnění platí do "
+"restartu tetherd."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

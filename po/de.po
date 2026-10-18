@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-17 16:11-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-22\n"
 "Last-Translator: Tether project\n"
 "Language-Team: German\n"
@@ -115,6 +115,24 @@ msgstr "AirPods während eines Anrufs an das iPhone übergeben: on oder off."
 msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr ""
 "Die Sitzung sperren, wenn das iPhone außer Reichweite gerät: on oder off."
+
+#: src/cli/main.cpp
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "Nachrichten und Kontakte freigeben, solange dieser Computer gesperrt oder inaktiv ist: on oder off."
+
+#: src/cli/main.cpp
+msgid ""
+"Release a profile for another computer until claimed: map, pbap, ancs, or "
+"all."
+msgstr ""
+"Ein Profil für einen anderen Computer freigeben, bis es zurückgeholt wird: "
+"map, pbap, ancs oder all."
+
+#: src/cli/main.cpp
+msgid "Take back a released profile: map, pbap, ancs, or all."
+msgstr "Ein freigegebenes Profil zurückholen: map, pbap, ancs oder all."
 
 #: src/cli/main.cpp
 msgid "List iPhone message conversations."
@@ -586,6 +604,32 @@ msgstr "Die Sitzung wird gesperrt, wenn das iPhone außer Reichweite gerät."
 #: src/cli/main.cpp
 msgid "Locking on the iPhone going out of range is off."
 msgstr "Sperren, wenn das iPhone außer Reichweite gerät, ist ausgeschaltet."
+
+#: src/cli/main.cpp
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "Nachrichten und Kontakte werden freigegeben, solange dieser Computer gesperrt oder inaktiv ist."
+
+#: src/cli/main.cpp
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "Nachrichten und Kontakte bleiben verbunden, auch wenn dieser Computer gesperrt oder inaktiv ist."
+
+#: src/cli/main.cpp
+msgid "Use map, pbap, ancs, or all.\n"
+msgstr "Verwenden Sie map, pbap, ancs oder all.\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Released %s on this computer.\n"
+msgstr "Auf diesem Computer freigegeben: %s.\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Claiming %s. If another computer holds it, release it there first.\n"
+msgstr ""
+"%s wird zurückgeholt. Wenn ein anderer Computer es hält, geben Sie es zuerst "
+"dort frei.\n"
 
 #: src/cli/main.cpp
 msgid "Daemon closed the connection before the operation finished.\n"
@@ -1400,7 +1444,11 @@ msgid ""
 "If every attempt gives a BR/EDR-only bond, this controller may not support "
 "Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
 "pair again."
-msgstr "Wenn jeder Versuch eine reine BR/EDR-Kopplung ergibt, unterstützt dieser Controller „Sichere Verbindungen“ unter BR/EDR möglicherweise nicht; versuchen Sie einen anderen mit tether --bt-adapter {} und koppeln Sie erneut."
+msgstr ""
+"Wenn jeder Versuch eine reine BR/EDR-Kopplung ergibt, unterstützt dieser "
+"Controller „Sichere Verbindungen“ unter BR/EDR möglicherweise nicht; "
+"versuchen Sie einen anderen mit tether --bt-adapter {} und koppeln Sie "
+"erneut."
 
 #: src/core/src/bluetooth/objects.cpp
 msgid ""
@@ -1663,6 +1711,20 @@ msgstr "{} konnte nicht geöffnet werden."
 #: src/gtk/notifications_view.cpp src/tui/notifications.cpp
 msgid "Waiting for the iPhone."
 msgstr "Warten auf das iPhone."
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+msgid "Messages and contacts"
+msgstr "Nachrichten und Kontakte"
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released while this computer is locked or idle."
+msgstr "Freigegeben, solange dieser Computer gesperrt oder inaktiv ist: {}."
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released on this computer."
+msgstr "Auf diesem Computer freigegeben: {}."
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 msgid "Messages and contacts are connected."
@@ -2434,6 +2496,37 @@ msgstr ""
 "Die Bluetooth-Verbindung zum iPhone aufrechterhalten und bei jedem Abbruch "
 "neu aufbauen. Ausschalten hindert Tether am erneuten Verbinden; eine bereits "
 "bestehende Verbindung bleibt, bis Sie sie trennen."
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Advanced"
+msgstr "Erweitert"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages"
+msgstr "Nachrichten freigeben"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release contacts"
+msgstr "Kontakte freigeben"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release notifications"
+msgstr "Mitteilungen freigeben"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "Nachrichten und Kontakte freigeben, solange dieser Computer gesperrt oder inaktiv ist"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid ""
+"The iPhone serves messages to one computer at a time. Releasing lets another "
+"computer take them; unchecking retries, but cannot take them from a computer "
+"that still holds them. Releases last until tetherd restarts."
+msgstr ""
+"Das iPhone stellt Nachrichten immer nur einem Computer bereit. Freigeben "
+"lässt einen anderen Computer sie übernehmen; das Häkchen zu entfernen "
+"versucht es erneut, kann sie aber keinem Computer wegnehmen, der sie noch "
+"hält. Freigaben gelten bis zum Neustart von tetherd."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

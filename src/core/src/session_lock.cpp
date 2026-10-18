@@ -1,4 +1,5 @@
 #include "tether/session_lock.hpp"
+#include "tether/wayland.hpp"
 
 #include <tether/log.hpp>
 
@@ -28,14 +29,14 @@ namespace tether {
             return connection;
         }
 
-        bool already_locked(GDBusConnection* connection) {
+        bool bool_property(GDBusConnection* connection, const char* name) {
             GError* error = nullptr;
             GVariant* reply = g_dbus_connection_call_sync(connection,
                                                           LOGIND_NAME,
                                                           SESSION_PATH,
                                                           "org.freedesktop.DBus.Properties",
                                                           "Get",
-                                                          g_variant_new("(ss)", SESSION_IFACE, "LockedHint"),
+                                                          g_variant_new("(ss)", SESSION_IFACE, name),
                                                           G_VARIANT_TYPE("(v)"),
                                                           G_DBUS_CALL_FLAGS_NO_AUTO_START,
                                                           CALL_TIMEOUT_MS,
@@ -48,11 +49,11 @@ namespace tether {
 
             GVariant* boxed = nullptr;
             g_variant_get(reply, "(v)", &boxed);
-            const bool locked = boxed && g_variant_get_boolean(boxed);
+            const bool value = boxed && g_variant_get_boolean(boxed);
             if (boxed)
                 g_variant_unref(boxed);
             g_variant_unref(reply);
-            return locked;
+            return value;
         }
 
         bool lock_via_logind() {
@@ -60,7 +61,7 @@ namespace tether {
             if (!connection)
                 return false;
 
-            if (already_locked(connection)) {
+            if (bool_property(connection, "LockedHint")) {
                 debug::log(INFO, "lock: session is already locked");
                 return true;
             }
@@ -117,6 +118,14 @@ namespace tether {
         if (!command.empty())
             return run_command(command);
         return lock_via_logind();
+    }
+
+    bool session_inactive() {
+        if (wayland_idle())
+            return true;
+        GDBusConnection* connection = bus();
+        // GNOME has no ext-idle-notify, but gnome-session sets IdleHint.
+        return connection && (bool_property(connection, "LockedHint") || bool_property(connection, "IdleHint"));
     }
 
 } // namespace tether

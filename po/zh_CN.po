@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-17 16:11-0700\n"
+"POT-Creation-Date: 2026-10-18 15:06-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Simplified Chinese\n"
@@ -111,6 +111,22 @@ msgstr "通话期间将 AirPods 交给 iPhone：on 或 off。"
 #: src/cli/main.cpp
 msgid "Lock the session when the iPhone goes out of range: on or off."
 msgstr "当 iPhone 超出范围时锁定会话：on 或 off。"
+
+#: src/cli/main.cpp
+msgid ""
+"Release messages and contacts while this computer is locked or idle: on or "
+"off."
+msgstr "此电脑锁定或空闲时释放信息和通讯录：on 或 off。"
+
+#: src/cli/main.cpp
+msgid ""
+"Release a profile for another computer until claimed: map, pbap, ancs, or "
+"all."
+msgstr "将某个配置文件释放给其他电脑，直到重新获取：map、pbap、ancs 或 all。"
+
+#: src/cli/main.cpp
+msgid "Take back a released profile: map, pbap, ancs, or all."
+msgstr "重新获取已释放的配置文件：map、pbap、ancs 或 all。"
 
 #: src/cli/main.cpp
 msgid "List iPhone message conversations."
@@ -558,6 +574,30 @@ msgstr "当 iPhone 超出范围时将锁定会话。"
 #: src/cli/main.cpp
 msgid "Locking on the iPhone going out of range is off."
 msgstr "iPhone 超出范围时锁定已关闭。"
+
+#: src/cli/main.cpp
+msgid ""
+"Messages and contacts will be released while this computer is locked or idle."
+msgstr "此电脑锁定或空闲时将释放信息和通讯录。"
+
+#: src/cli/main.cpp
+msgid ""
+"Messages and contacts stay connected while this computer is locked or idle."
+msgstr "此电脑锁定或空闲时信息和通讯录保持连接。"
+
+#: src/cli/main.cpp
+msgid "Use map, pbap, ancs, or all.\n"
+msgstr "请使用 map、pbap、ancs 或 all。\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Released %s on this computer.\n"
+msgstr "已在此电脑上释放：%s。\n"
+
+#: src/cli/main.cpp
+#, c-format
+msgid "Claiming %s. If another computer holds it, release it there first.\n"
+msgstr "正在重新获取 %s。如果其他电脑正在占用，请先在那台电脑上释放。\n"
 
 #: src/cli/main.cpp
 msgid "Daemon closed the connection before the operation finished.\n"
@@ -1313,7 +1353,9 @@ msgid ""
 "If every attempt gives a BR/EDR-only bond, this controller may not support "
 "Secure Connections on BR/EDR; try another with tether --bt-adapter {} and "
 "pair again."
-msgstr "如果每次配对都只得到 BR/EDR 配对，此控制器可能不支持 BR/EDR 上的 Secure Connections；请用 tether --bt-adapter {} 换用其他控制器，然后重新配对。"
+msgstr ""
+"如果每次配对都只得到 BR/EDR 配对，此控制器可能不支持 BR/EDR 上的 Secure "
+"Connections；请用 tether --bt-adapter {} 换用其他控制器，然后重新配对。"
 
 #: src/core/src/bluetooth/objects.cpp
 msgid ""
@@ -1558,6 +1600,20 @@ msgstr "无法打开 {}。"
 #: src/gtk/notifications_view.cpp src/tui/notifications.cpp
 msgid "Waiting for the iPhone."
 msgstr "正在等待 iPhone。"
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+msgid "Messages and contacts"
+msgstr "信息和通讯录"
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released while this computer is locked or idle."
+msgstr "此电脑锁定或空闲期间已释放：{}。"
+
+#: src/core/src/bluetooth/profile_supervisor.cpp
+#, c++-format
+msgid "{} released on this computer."
+msgstr "已在此电脑上释放：{}。"
 
 #: src/core/src/bluetooth/profile_supervisor.cpp
 msgid "Messages and contacts are connected."
@@ -2299,6 +2355,35 @@ msgid ""
 msgstr ""
 "保持与 iPhone 的蓝牙链路，并在每次断开时重新连接。关闭后 Tether 将不再重连；"
 "已经建立的链路会一直保持，直到你断开它。"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Advanced"
+msgstr "高级"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages"
+msgstr "释放信息"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release contacts"
+msgstr "释放通讯录"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release notifications"
+msgstr "释放通知"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid "Release messages and contacts while this computer is locked or idle"
+msgstr "此电脑锁定或空闲时释放信息和通讯录"
+
+#: src/gtk/devices_view.cpp src/tui/devices.cpp
+msgid ""
+"The iPhone serves messages to one computer at a time. Releasing lets another "
+"computer take them; unchecking retries, but cannot take them from a computer "
+"that still holds them. Releases last until tetherd restarts."
+msgstr ""
+"iPhone 一次只向一台电脑提供信息。释放后其他电脑可以接管；取消勾选会重试，但无"
+"法从仍占用它们的电脑那里取回。释放状态持续到 tetherd 重启。"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Pair over Bluetooth"

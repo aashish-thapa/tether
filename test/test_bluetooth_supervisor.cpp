@@ -836,6 +836,48 @@ TEST(ProfileSupervisor, DropMapReopensWithoutTouchingPbap) {
     EXPECT_EQ(sup.pbap_session(), pbap) << "the surviving PBAP session was reopened needlessly";
 }
 
+// A held profile frees the iPhone's single MAP session for another computer, so
+// it must be removed and stay closed until the hold lifts.
+TEST(ProfileSupervisor, HeldMapIsRemovedAndNotReopened) {
+    FakeProfiles ops;
+    ProfileSupervisor sup(ops);
+
+    sup.tick(0, true);
+    const std::string first_map = sup.map_session();
+    const std::string pbap = sup.pbap_session();
+
+    sup.set_held(true, false, false);
+    ASSERT_EQ(ops.removed.size(), 1u);
+    EXPECT_EQ(ops.removed.front(), first_map);
+    EXPECT_FALSE(sup.status().map_open);
+    EXPECT_TRUE(sup.status().map_held);
+
+    sup.tick(100, true);
+    EXPECT_EQ(ops.map_attempts, 1) << "a held MAP session was reopened";
+    EXPECT_EQ(sup.pbap_session(), pbap);
+    EXPECT_NE(sup.status().reason.find("released"), std::string::npos);
+
+    // Lifting the hold reopens on the next tick, without waiting out the poll.
+    sup.set_held(false, false, false);
+    sup.tick(101, true);
+    EXPECT_TRUE(sup.status().map_open);
+    EXPECT_EQ(ops.map_attempts, 2);
+}
+
+// Re-applying the same hold every tick must not churn sessions.
+TEST(ProfileSupervisor, RepeatedHoldIsIdempotent) {
+    FakeProfiles ops;
+    ProfileSupervisor sup(ops);
+
+    sup.tick(0, true);
+    sup.set_held(true, true, true);
+    sup.set_held(true, true, true);
+    EXPECT_EQ(ops.removed.size(), 2u);
+    sup.tick(1, true);
+    EXPECT_EQ(ops.map_attempts + ops.pbap_attempts, 2);
+    EXPECT_NE(sup.status().reason.find("idle"), std::string::npos);
+}
+
 // iOS routinely keeps an LE link while letting BR/EDR lapse. ANCS rides LE
 // alone, so notification mirroring keeps working there — reporting LE as down
 // because BR/EDR is would tear down a GATT session that is still delivering.

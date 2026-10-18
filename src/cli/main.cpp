@@ -200,6 +200,9 @@ static const Opt kOptions[] = {
     {"--bt-airpods-pause", N_("Pause local playback when an AirPod is removed: never, one-removed, both-removed.")},
     {"--bt-airpods-handoff", N_("Hand the AirPods to the iPhone during a call: on or off.")},
     {"--bt-lock-on-away", N_("Lock the session when the iPhone goes out of range: on or off.")},
+    {"--bt-yield-when-inactive", N_("Release messages and contacts while this computer is locked or idle: on or off.")},
+    {"--bt-release", N_("Release a profile for another computer until claimed: map, pbap, ancs, or all.")},
+    {"--bt-claim", N_("Take back a released profile: map, pbap, ancs, or all.")},
     {"--bt-threads", N_("List iPhone message conversations.")},
     {"--bt-messages <thread>", N_("Show messages in one conversation.")},
     {"--bt-send <thread> <text>", N_("Reply in one conversation.")},
@@ -693,6 +696,40 @@ static int set_bt_lock_on_away(tether::Client& client, const std::string& value)
             "%s\n",
             value == "on" ? _("The session will lock when the iPhone goes out of range.")
                           : _("Locking on the iPhone going out of range is off."));
+    return 0;
+}
+
+static int set_bt_yield_when_inactive(tether::Client& client, const std::string& value) {
+    if (value != "on" && value != "off") {
+        debug::log(ERR, _("Use on or off.\n"));
+        return 1;
+    }
+    if (!client.send(nlohmann::json{{"command", "bt_set_yield_when_inactive"}, {"enabled", value == "on"}}.dump() +
+                     "\n")) {
+        debug::log(ERR, _("Could not reach the daemon.\n"));
+        return 1;
+    }
+    fprintf(stdout,
+            "%s\n",
+            value == "on" ? _("Messages and contacts will be released while this computer is locked or idle.")
+                          : _("Messages and contacts stay connected while this computer is locked or idle."));
+    return 0;
+}
+
+// Holds are runtime only: restarting tetherd claims everything again.
+static int set_bt_hold(tether::Client& client, const std::string& profile, bool held) {
+    if (profile != "map" && profile != "pbap" && profile != "ancs" && profile != "all") {
+        debug::log(ERR, _("Use map, pbap, ancs, or all.\n"));
+        return 1;
+    }
+    if (!client.send(nlohmann::json{{"command", "bt_hold"}, {"profile", profile}, {"held", held}}.dump() + "\n")) {
+        debug::log(ERR, _("Could not reach the daemon.\n"));
+        return 1;
+    }
+    if (held)
+        fprintf(stdout, _("Released %s on this computer.\n"), profile.c_str());
+    else
+        fprintf(stdout, _("Claiming %s. If another computer holds it, release it there first.\n"), profile.c_str());
     return 0;
 }
 
@@ -1350,6 +1387,14 @@ int main(int argc, char* argv[]) {
             action = "bt_lock_on_away";
             if (i + 1 < argc && argv[i + 1][0] != '-')
                 arg_val = argv[++i];
+        } else if (arg == "--bt-yield-when-inactive") {
+            action = "bt_yield_when_inactive";
+            if (i + 1 < argc && argv[i + 1][0] != '-')
+                arg_val = argv[++i];
+        } else if (arg == "--bt-release" || arg == "--bt-claim") {
+            action = arg == "--bt-release" ? "bt_release" : "bt_claim";
+            if (i + 1 < argc && argv[i + 1][0] != '-')
+                arg_val = argv[++i];
         } else if (arg == "--bt-diagnostics") {
             action = "bt_diagnostics";
         } else if (arg == "--bt-threads") {
@@ -1620,6 +1665,10 @@ int main(int argc, char* argv[]) {
         return set_bt_airpods_handoff(client, arg_val);
     } else if (action == "bt_lock_on_away") {
         return set_bt_lock_on_away(client, arg_val);
+    } else if (action == "bt_yield_when_inactive") {
+        return set_bt_yield_when_inactive(client, arg_val);
+    } else if (action == "bt_release" || action == "bt_claim") {
+        return set_bt_hold(client, arg_val, action == "bt_release");
     } else if (action == "bt_diagnostics") {
         return print_bt_diagnostics(client);
     } else if (action == "bt_threads") {
