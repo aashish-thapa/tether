@@ -12,6 +12,7 @@
 #include <tether/crypto.hpp>
 #include <tether/discovery.hpp>
 #include <tether/version.hpp>
+#include <utility>
 #include <vector>
 
 namespace tether::ui {
@@ -102,9 +103,12 @@ namespace tether::ui {
             GtkWidget* lbl_welcome_wifi = nullptr;
             GtkWidget* lbl_welcome_bt = nullptr;
 
-            // Files waiting to go to the phone, front is in flight.
+            // Files waiting to go out, front is in flight.
             GtkWidget* dropzone = nullptr;
-            std::deque<std::filesystem::path> send_queue;
+            std::deque<std::pair<std::filesystem::path, std::string>> send_queue; // path, target fp
+            // --send files that arrived before the first state_snapshot said who is connected.
+            bool snapshot_seen = false;
+            std::vector<std::filesystem::path> pending_send;
             size_t send_batch_total = 0;
             size_t send_failed = 0;
             size_t send_skipped = 0;
@@ -699,7 +703,7 @@ namespace tether::ui {
         void start_next_send() {
             if (g_devices.send_queue.empty())
                 return;
-            const std::filesystem::path& path = g_devices.send_queue.front();
+            const auto& [path, target] = g_devices.send_queue.front();
             // TRANSLATORS: {} is a file name.
             std::string status = tether::tr_format(_("Sending {}…"), path.filename().string());
             if (g_devices.send_batch_total > 1) {
@@ -711,12 +715,76 @@ namespace tether::ui {
             nlohmann::json j;
             j["command"] = "send_file";
             j["path"] = path.string();
+            if (!target.empty())
+                j["target"] = target;
             daemon_send(j);
         }
 
         // skipped counts items that came in with the batch but are not sendable
         // files, so the final status can admit they were dropped.
-        void queue_files(std::vector<std::filesystem::path> paths, size_t skipped = 0) {
+        // The window may be hidden in the tray when a file manager starts a send.
+        void notify_if_hidden(const std::string& message) {
+            GtkWidget* window = main_window();
+            if (window && gtk_widget_get_visible(window))
+                return;
+            GNotification* notification = g_notification_new("Tether");
+            g_notification_set_body(notification, message.c_str());
+            g_application_send_notification(g_application_get_default(), "tether-send", notification);
+            g_object_unref(notification);
+        }
+
+        // Peers report no platform, so the icon is guessed from the name.
+        const char* device_icon(const std::string& name) {
+            if (name.find("iPad") != std::string::npos)
+                return "tablet-symbolic";
+            if (name.find("iPhone") != std::string::npos)
+                return "phone-symbolic";
+            return "computer-symbolic";
+        }
+
+        // Returns the chosen fingerprint, empty when cancelled.
+        std::string pick_send_target(const std::vector<std::pair<std::string, std::string>>& devices) {
+            GtkWidget* window = main_window();
+            GtkWindow* parent = window && gtk_widget_get_visible(window) ? GTK_WINDOW(window) : nullptr;
+            GtkWidget* dialog = gtk_dialog_new_with_buttons(
+                _("Send to…"), parent, GTK_DIALOG_MODAL, _("_Cancel"), GTK_RESPONSE_CANCEL, nullptr);
+            gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+
+            GtkWidget* list = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+            gtk_container_set_border_width(GTK_CONTAINER(list), 18);
+            for (size_t i = 0; i < devices.size(); ++i) {
+                GtkWidget* content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+                gtk_box_pack_start(GTK_BOX(content),
+                                   gtk_image_new_from_icon_name(device_icon(devices[i].second), GTK_ICON_SIZE_DIALOG),
+                                   FALSE,
+                                   FALSE,
+                                   0);
+                gtk_box_pack_start(GTK_BOX(content), gtk_label_new(devices[i].second.c_str()), FALSE, FALSE, 0);
+                GtkWidget* button = gtk_button_new();
+                gtk_container_add(GTK_CONTAINER(button), content);
+                gtk_widget_set_tooltip_text(button, devices[i].second.c_str());
+                g_object_set_data(G_OBJECT(button), "index", GINT_TO_POINTER(static_cast<gint>(i)));
+                g_signal_connect(button,
+                                 "clicked",
+                                 G_CALLBACK(+[](GtkWidget* button, gpointer dialog) {
+                                     gtk_dialog_response(GTK_DIALOG(dialog),
+                                                         GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "index")));
+                                 }),
+                                 dialog);
+                gtk_box_pack_start(GTK_BOX(list), button, TRUE, TRUE, 0);
+            }
+            gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), list, TRUE, TRUE, 0);
+            gtk_widget_show_all(dialog);
+
+            const gint response = gtk_dialog_run(GTK_DIALOG(dialog));
+            gtk_widget_destroy(dialog);
+            if (response < 0 || static_cast<size_t>(response) >= devices.size())
+                return "";
+            return devices[static_cast<size_t>(response)].first;
+        }
+
+        // An empty target sends to every connected device.
+        void queue_files(std::vector<std::filesystem::path> paths, const std::string& target, size_t skipped = 0) {
             if (paths.empty())
                 return;
             if (!daemon_connected()) {
@@ -734,7 +802,7 @@ namespace tether::ui {
                 g_devices.send_skipped += skipped;
             }
             for (auto& path : paths)
-                g_devices.send_queue.push_back(std::move(path));
+                g_devices.send_queue.emplace_back(std::move(path), target);
             if (idle)
                 start_next_send();
         }
@@ -759,7 +827,7 @@ namespace tether::ui {
                 g_slist_free(names);
             }
             gtk_widget_destroy(dialog);
-            queue_files(std::move(files));
+            queue_files(std::move(files), g_devices.selected_device_fp);
         }
 
         void set_dropzone_active(bool active) {
@@ -814,7 +882,7 @@ namespace tether::ui {
                 set_status_action(_("Folders can't be sent — drop files instead."));
                 return;
             }
-            queue_files(std::move(files), skipped);
+            queue_files(std::move(files), g_devices.selected_device_fp, skipped);
         }
 
         void update_wifi_indicator() {
@@ -886,6 +954,45 @@ namespace tether::ui {
         }
 
     } // namespace
+
+    void devices_view_send_files(std::vector<std::filesystem::path> paths) {
+        const size_t before = paths.size();
+        std::erase_if(paths, [](const std::filesystem::path& path) {
+            std::error_code ec;
+            return std::filesystem::is_directory(path, ec);
+        });
+        if (paths.empty()) {
+            if (before > 0)
+                notify_if_hidden(_("Folders can't be sent — pick files instead."));
+            return;
+        }
+        if (!g_devices.snapshot_seen) {
+            g_devices.pending_send.insert(g_devices.pending_send.end(), paths.begin(), paths.end());
+            return;
+        }
+
+        // fp, name; a peer can hold two sessions for a moment, so dedupe.
+        std::vector<std::pair<std::string, std::string>> devices;
+        for (const auto& fp : g_devices.connected_fps) {
+            if (fp.empty() || std::any_of(devices.begin(), devices.end(), [&](const auto& d) { return d.first == fp; }))
+                continue;
+            std::string name = _("Unknown Device");
+            for (const auto& [paired_fp, paired_name] : g_devices.paired_devices)
+                if (paired_fp == fp)
+                    name = paired_name;
+            devices.emplace_back(fp, name);
+        }
+
+        if (devices.empty()) {
+            const std::string message = _("No device is connected.");
+            set_status_action(message);
+            notify_if_hidden(message);
+            return;
+        }
+        const std::string target = devices.size() == 1 ? devices.front().first : pick_send_target(devices);
+        if (!target.empty())
+            queue_files(std::move(paths), target);
+    }
 
     void devices_view_handle_disconnect() {
         set_bt_progress("");
@@ -1138,6 +1245,9 @@ namespace tether::ui {
             return false;
         if (command == "state_snapshot") {
             apply_state_snapshot(event);
+            g_devices.snapshot_seen = true;
+            if (!g_devices.pending_send.empty())
+                devices_view_send_files(std::exchange(g_devices.pending_send, {}));
             return true;
         }
         if (command == "mdns_status") {
@@ -1307,6 +1417,7 @@ namespace tether::ui {
                               P_("Skipped {} non-file item.", "Skipped {} non-file items.", g_devices.send_skipped),
                               g_devices.send_skipped);
             set_status_action(message);
+            notify_if_hidden(message);
 
             g_devices.send_batch_total = 0;
             g_devices.send_failed = 0;

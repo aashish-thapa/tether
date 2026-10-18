@@ -22,7 +22,8 @@ namespace tether {
         // Base Level payload loop
         bool send(const std::string& payload);
         std::string send_and_wait(const std::string& payload);
-        bool send_file(const std::string& path, std::string& err_out);
+        // target is a peer fingerprint; empty sends to every connected peer.
+        bool send_file(const std::string& path, std::string& err_out, const std::string& target = "");
 
         std::string get_peer_fingerprint() const;
         ssize_t read(char* buf, size_t count);

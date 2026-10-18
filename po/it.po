@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Italian\n"
@@ -46,6 +46,10 @@ msgstr ""
 #: src/cli/main.cpp
 msgid "Send a file through tether."
 msgstr "Invia un file tramite tether."
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
+msgstr "Con --send-file, invia a un solo dispositivo connesso (nome o impronta)."
 
 #: src/cli/main.cpp
 msgid "Start the browser Native Messaging Host proxy loop."
@@ -123,7 +127,9 @@ msgstr "Blocca la sessione quando l'iPhone esce dalla portata: on oppure off."
 msgid ""
 "Release messages and contacts while this computer is locked or idle: on or "
 "off."
-msgstr "Rilascia messaggi e contatti mentre questo computer è bloccato o inattivo: on o off."
+msgstr ""
+"Rilascia messaggi e contatti mentre questo computer è bloccato o inattivo: "
+"on o off."
 
 #: src/cli/main.cpp
 msgid ""
@@ -611,12 +617,16 @@ msgstr "Il blocco quando l'iPhone esce dalla portata è disattivato."
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts will be released while this computer is locked or idle."
-msgstr "Messaggi e contatti verranno rilasciati mentre questo computer è bloccato o inattivo."
+msgstr ""
+"Messaggi e contatti verranno rilasciati mentre questo computer è bloccato o "
+"inattivo."
 
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts stay connected while this computer is locked or idle."
-msgstr "Messaggi e contatti restano connessi mentre questo computer è bloccato o inattivo."
+msgstr ""
+"Messaggi e contatti restano connessi mentre questo computer è bloccato o "
+"inattivo."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -811,6 +821,16 @@ msgstr "Il messaggio non è stato inviato."
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
 msgstr "Impossibile leggere lo stato del demone.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr "Nessun dispositivo connesso di nome {}. Esegui 'tether status' per vederli.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
+msgstr "Più dispositivi si chiamano {}; indica invece la sua impronta.\n"
 
 #: src/cli/main.cpp
 msgid "Version"
@@ -2186,6 +2206,14 @@ msgstr "Invio di {}…"
 msgid "({0} of {1})"
 msgstr "({0} di {1})"
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr "Invia a…"
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr "A_nnulla"
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr "Daemon non disponibile."
@@ -2193,10 +2221,6 @@ msgstr "Daemon non disponibile."
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
 msgstr "Invia file"
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
-msgstr "A_nnulla"
 
 #: src/gtk/devices_view.cpp
 msgid "_Send"
@@ -2245,6 +2269,14 @@ msgstr ""
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
 msgstr "Dispositivo sconosciuto"
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr "Le cartelle non possono essere inviate — scegli dei file."
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
+msgstr "Nessun dispositivo connesso."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Connected"
@@ -2496,7 +2528,8 @@ msgstr "Rilascia notifiche"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Release messages and contacts while this computer is locked or idle"
-msgstr "Rilascia messaggi e contatti mentre questo computer è bloccato o inattivo"
+msgstr ""
+"Rilascia messaggi e contatti mentre questo computer è bloccato o inattivo"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
@@ -2597,6 +2630,14 @@ msgstr "Apri su questa scheda"
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
 msgstr "Apri la scheda messaggi su questa conversazione"
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr "Invia i file indicati, chiedendo a quale dispositivo se ne sono connessi diversi"
+
+#: src/gtk/main.cpp
+msgid "FILE…"
+msgstr "FILE…"
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp
 #, c++-format

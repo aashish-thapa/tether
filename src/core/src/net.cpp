@@ -59,6 +59,7 @@ namespace tether {
         int fd;
         SSL* ssl;                      // nullptr for plain unix clients
         bool clipboard_images = false; // announced in hello
+        std::string fingerprint;       // trusted peer's certificate, empty for unix clients
     };
 
     // Global list of active connected sessions
@@ -93,9 +94,9 @@ namespace tether {
         active_sessions[fd] = {fd, nullptr};
     }
 
-    void register_client_ssl(int fd, SSL* ssl) {
+    void register_client_ssl(int fd, SSL* ssl, const std::string& fingerprint) {
         std::lock_guard<std::mutex> lock(g_sessions_mutex);
-        active_sessions[fd] = {fd, ssl};
+        active_sessions[fd] = {fd, ssl, false, fingerprint};
     }
 
     void unregister_client_fd(int fd) {
@@ -949,6 +950,21 @@ namespace tether {
         return recipients;
     }
 
+    size_t send_tcp_message_to(const std::string& fingerprint, const std::string& msg) {
+        std::string packet = msg;
+        if (!packet.empty() && packet.back() != '\n')
+            packet += '\n';
+
+        std::lock_guard<std::mutex> lock(g_sessions_mutex);
+        for (auto const& [fd, session] : active_sessions) {
+            if (session.ssl && session.fingerprint == fingerprint) {
+                robust_ssl_write(session.ssl, packet.c_str(), packet.size());
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     std::vector<std::string> clipboard_image_messages(const std::string& png, const std::string& kind) {
         constexpr size_t CHUNK_BYTES = 512 * 1024;
         if (png.size() > CLIPBOARD_IMAGE_MAX_BYTES) {
@@ -1629,41 +1645,30 @@ namespace tether {
                         std::string payload = "{\"status\":\"ok\"}\n";
                         write_plain_packet(client_fd, payload);
                         continue;
-                    } else if (j.contains("command") && j["command"] == "file_start") {
-                        if (broadcast_tcp_message(msg) == 0) {
+                    } else if (j.contains("command") &&
+                               (j["command"] == "file_start" || j["command"] == "file_chunk" ||
+                                j["command"] == "file_end")) {
+                        // "target" picks one peer by fingerprint; without it every peer gets the file.
+                        // ponytail: target is forwarded as-is, receivers ignore unknown keys.
+                        const std::string target = j.value("target", "");
+                        const size_t sent = target.empty() ? broadcast_tcp_message(msg) : send_tcp_message_to(target, msg);
+                        if (sent == 0) {
                             nlohmann::json resp;
                             resp["command"] = "error";
-                            resp["message"] = "no_connected_mobile_client";
+                            resp["message"] = target.empty() ? "no_connected_mobile_client" : "target_not_connected";
                             std::string payload = resp.dump() + "\n";
                             write_plain_packet(client_fd, payload);
                             continue;
                         }
-                    } else if (j.contains("command") && j["command"] == "file_chunk") {
-                        if (broadcast_tcp_message(msg) == 0) {
+                        if (j["command"] == "file_end") {
                             nlohmann::json resp;
-                            resp["command"] = "error";
-                            resp["message"] = "no_connected_mobile_client";
+                            resp["command"] = "file_status";
+                            resp["transfer_id"] = j["transfer_id"];
+                            resp["status"] = "success";
                             std::string payload = resp.dump() + "\n";
                             write_plain_packet(client_fd, payload);
                             continue;
                         }
-                    } else if (j.contains("command") && j["command"] == "file_end") {
-                        if (broadcast_tcp_message(msg) == 0) {
-                            nlohmann::json resp;
-                            resp["command"] = "error";
-                            resp["message"] = "no_connected_mobile_client";
-                            std::string payload = resp.dump() + "\n";
-                            write_plain_packet(client_fd, payload);
-                            continue;
-                        }
-
-                        nlohmann::json resp;
-                        resp["command"] = "file_status";
-                        resp["transfer_id"] = j["transfer_id"];
-                        resp["status"] = "success";
-                        std::string payload = resp.dump() + "\n";
-                        write_plain_packet(client_fd, payload);
-                        continue;
                     } else if (j.contains("command") && j["command"] == "accept_device" && j.contains("fingerprint")) {
                         const std::string print = j.value("fingerprint", "");
                         const std::string fallback_name = j.value("device_name", "Paired Device");
@@ -1714,14 +1719,15 @@ namespace tether {
                     } else if (j.contains("command") && j["command"] == "send_file" && j.contains("path")) {
                         std::string path = j["path"];
                         const std::string operation_id = j.value("operation_id", std::string{});
-                        std::thread([path, operation_id]() {
+                        const std::string target = j.value("target", std::string{});
+                        std::thread([path, operation_id, target]() {
                             nlohmann::json resp;
                             resp["command"] = "file_send_complete";
                             set_operation_id(resp, operation_id);
                             Client local;
                             if (local.connect("", 0)) { // connects correctly via unix socket
                                 std::string err;
-                                bool ok = local.send_file(path, err);
+                                bool ok = local.send_file(path, err, target);
                                 resp["success"] = ok;
                                 resp["message"] =
                                     ok ? tr_format(_("Sent {}"), std::filesystem::path(path).filename().string())
@@ -2414,7 +2420,7 @@ namespace tether {
         remote_it->second.fingerprint = fingerprint;
 
         // Only a trusted session joins the broadcast registry.
-        register_client_ssl(client_fd, ssl_it->second);
+        register_client_ssl(client_fd, ssl_it->second, fingerprint);
 
         nlohmann::json connected_event{{"command", "client_connected"},
                                        {"fingerprint", fingerprint},

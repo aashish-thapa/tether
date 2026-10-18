@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Ukrainian\n"
@@ -48,6 +48,10 @@ msgstr ""
 #: src/cli/main.cpp
 msgid "Send a file through tether."
 msgstr "Надіслати файл через tether."
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
+msgstr "З --send-file надіслати на один підключений пристрій (назва або відбиток)."
 
 #: src/cli/main.cpp
 msgid "Start the browser Native Messaging Host proxy loop."
@@ -122,7 +126,9 @@ msgstr "Блокувати сеанс, коли iPhone виходить із з�
 msgid ""
 "Release messages and contacts while this computer is locked or idle: on or "
 "off."
-msgstr "Звільняти повідомлення й контакти, поки цей комп'ютер заблоковано або неактивний: on або off."
+msgstr ""
+"Звільняти повідомлення й контакти, поки цей комп'ютер заблоковано або "
+"неактивний: on або off."
 
 #: src/cli/main.cpp
 msgid ""
@@ -611,12 +617,16 @@ msgstr "Блокування, коли iPhone виходить із зони д�
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts will be released while this computer is locked or idle."
-msgstr "Повідомлення й контакти звільнятимуться, поки цей комп'ютер заблоковано або неактивний."
+msgstr ""
+"Повідомлення й контакти звільнятимуться, поки цей комп'ютер заблоковано або "
+"неактивний."
 
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts stay connected while this computer is locked or idle."
-msgstr "Повідомлення й контакти лишаються під'єднаними, поки цей комп'ютер заблоковано або неактивний."
+msgstr ""
+"Повідомлення й контакти лишаються під'єднаними, поки цей комп'ютер "
+"заблоковано або неактивний."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -811,6 +821,16 @@ msgstr "Повідомлення не надіслано."
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
 msgstr "Не вдалося прочитати стан демона.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr "Немає підключеного пристрою з назвою {}. Запустіть 'tether status', щоб побачити їх.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
+msgstr "Назву {} мають кілька пристроїв; вкажіть натомість його відбиток.\n"
 
 #: src/cli/main.cpp
 msgid "Version"
@@ -2172,6 +2192,14 @@ msgstr "Надсилання {}…"
 msgid "({0} of {1})"
 msgstr "({0} з {1})"
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr "Надіслати на…"
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr "_Скасувати"
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr "Демон недоступний."
@@ -2179,10 +2207,6 @@ msgstr "Демон недоступний."
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
 msgstr "Надіслати файл"
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
-msgstr "_Скасувати"
 
 #: src/gtk/devices_view.cpp
 msgid "_Send"
@@ -2230,6 +2254,14 @@ msgstr ""
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
 msgstr "Невідомий пристрій"
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr "Теки надіслати не можна — виберіть замість них файли."
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
+msgstr "Немає підключених пристроїв."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Connected"
@@ -2480,7 +2512,9 @@ msgstr "Звільнити сповіщення"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Release messages and contacts while this computer is locked or idle"
-msgstr "Звільняти повідомлення й контакти, поки цей комп'ютер заблоковано або неактивний"
+msgstr ""
+"Звільняти повідомлення й контакти, поки цей комп'ютер заблоковано або "
+"неактивний"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
@@ -2581,6 +2615,14 @@ msgstr "Відкрити на цій вкладці"
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
 msgstr "Відкрити вкладку повідомлень на цій розмові"
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr "Надіслати вказані файли, запитавши пристрій, якщо підключено кілька"
+
+#: src/gtk/main.cpp
+msgid "FILE…"
+msgstr "ФАЙЛ…"
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp
 #, c++-format

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Simplified Chinese\n"
@@ -45,6 +45,10 @@ msgstr "从输入读取文本并复制到本地 Wayland 剪贴板。"
 #: src/cli/main.cpp
 msgid "Send a file through tether."
 msgstr "通过 tether 发送文件。"
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
+msgstr "与 --send-file 配合使用，发送到一台已连接的设备（名称或指纹）。"
 
 #: src/cli/main.cpp
 msgid "Start the browser Native Messaging Host proxy loop."
@@ -774,6 +778,16 @@ msgstr "信息未发送。"
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
 msgstr "无法读取守护进程的状态。\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr "没有名为 {} 的已连接设备。运行 'tether status' 查看。\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
+msgstr "有多台设备名为 {}；请改为指定其指纹。\n"
 
 #: src/cli/main.cpp
 msgid "Version"
@@ -2079,6 +2093,14 @@ msgstr "正在发送 {}……"
 msgid "({0} of {1})"
 msgstr "（第 {0} 个，共 {1} 个）"
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr "发送到…"
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr "取消(_C)"
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr "守护进程不可用。"
@@ -2086,10 +2108,6 @@ msgstr "守护进程不可用。"
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
 msgstr "发送文件"
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
-msgstr "取消(_C)"
 
 #: src/gtk/devices_view.cpp
 msgid "_Send"
@@ -2134,6 +2152,14 @@ msgstr "没有已配对的设备处于连接状态。请开机并连接到同一
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
 msgstr "未知设备"
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr "无法发送文件夹 —— 请改为选择文件。"
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
+msgstr "没有已连接的设备。"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Connected"
@@ -2473,6 +2499,14 @@ msgstr "在此标签页中打开"
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
 msgstr "在此会话中打开信息标签页"
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr "发送指定文件；连接了多台设备时询问发送到哪台"
+
+#: src/gtk/main.cpp
+msgid "FILE…"
+msgstr "文件…"
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp
 #, c++-format

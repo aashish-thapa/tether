@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <set>
 #include <sstream>
 #include <string>
 #include <strings.h>
@@ -184,6 +185,7 @@ static const Opt kOptions[] = {
     {"-g, --get-clipboard", N_("Retrieve the current Wayland clipboard text.")},
     {"-s, --set-clipboard", N_("Take string input and copy it to the local Wayland clipboard.")},
     {"-f, --send-file", N_("Send a file through tether.")},
+    {"--to <name>", N_("With --send-file, send to one connected device (name or fingerprint).")},
     {"-n, --native-host", N_("Start the browser Native Messaging Host proxy loop.")},
     {"-d, --discover", N_("Scan the local network for tetherd instances via mDNS.")},
     {"--host <ip>", N_("Connect over TCP to daemon ip instead of UNIX Socket.")},
@@ -1182,6 +1184,36 @@ static nlohmann::json state_snapshot(tether::Client& client) {
     return snapshot;
 }
 
+// Matches a paired, connected peer by fingerprint or case-insensitive name.
+static bool resolve_send_target(tether::Client& client, const std::string& wanted, std::string& fingerprint) {
+    nlohmann::json snap;
+    try {
+        snap = state_snapshot(client);
+    } catch (const std::exception&) {
+        debug::log(ERR, _("Could not read the daemon's state.\n"));
+        return false;
+    }
+
+    std::set<std::string> matches;
+    for (const auto& c : snap.value("connected_clients", nlohmann::json::array())) {
+        const std::string print = c.value("fingerprint", "");
+        if (!c.value("paired", false) || print.empty())
+            continue;
+        if (print == wanted || strcasecmp(c.value("device_name", "").c_str(), wanted.c_str()) == 0)
+            matches.insert(print);
+    }
+
+    if (matches.size() == 1) {
+        fingerprint = *matches.begin();
+        return true;
+    }
+    if (matches.empty())
+        debug::log(ERR, _("No connected device named {}. Run 'tether status' to see them.\n"), wanted);
+    else
+        debug::log(ERR, _("More than one device is named {}; pass its fingerprint instead.\n"), wanted);
+    return false;
+}
+
 static int print_status(tether::Client& client) {
     nlohmann::json snap;
     try {
@@ -1326,7 +1358,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    std::string action, arg_val, arg_val2, host = "";
+    std::string action, arg_val, arg_val2, host = "", send_to;
     bool explicit_pair = false;
     int port = 5134;
     int timeout_ms = 3000;
@@ -1494,6 +1526,9 @@ int main(int argc, char* argv[]) {
             action = "file";
             if (i + 1 < argc && argv[i + 1][0] != '-')
                 arg_val = argv[++i];
+        } else if (arg == "--to") {
+            if (i + 1 < argc)
+                send_to = argv[++i];
         } else if (arg == "-n" || arg == "--native-host") {
             action = "native";
         } else if (arg == "-s" || arg == "--set-clipboard") {
@@ -1631,8 +1666,11 @@ int main(int argc, char* argv[]) {
             return 1;
         }
     } else if (action == "file") {
+        std::string target;
+        if (!send_to.empty() && !resolve_send_target(client, send_to, target))
+            return 1;
         debug::log(INFO, "Sending {}...", arg_val);
-        if (!client.send_file(arg_val, err)) {
+        if (!client.send_file(arg_val, err, target)) {
             debug::log(ERR, _("Transfer Failed: {}"), err);
             return 1;
         }

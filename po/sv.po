@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Swedish\n"
@@ -46,6 +46,10 @@ msgstr ""
 #: src/cli/main.cpp
 msgid "Send a file through tether."
 msgstr "Skicka en fil via tether."
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
+msgstr "Med --send-file, skicka till en ansluten enhet (namn eller fingeravtryck)."
 
 #: src/cli/main.cpp
 msgid "Start the browser Native Messaging Host proxy loop."
@@ -120,7 +124,9 @@ msgstr "Lås sessionen när iPhonen hamnar utom räckhåll: on eller off."
 msgid ""
 "Release messages and contacts while this computer is locked or idle: on or "
 "off."
-msgstr "Släpp meddelanden och kontakter medan den här datorn är låst eller inaktiv: on eller off."
+msgstr ""
+"Släpp meddelanden och kontakter medan den här datorn är låst eller inaktiv: "
+"on eller off."
 
 #: src/cli/main.cpp
 msgid ""
@@ -606,12 +612,15 @@ msgstr "Låsning när iPhonen hamnar utom räckhåll är avstängd."
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts will be released while this computer is locked or idle."
-msgstr "Meddelanden och kontakter släpps medan den här datorn är låst eller inaktiv."
+msgstr ""
+"Meddelanden och kontakter släpps medan den här datorn är låst eller inaktiv."
 
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts stay connected while this computer is locked or idle."
-msgstr "Meddelanden och kontakter förblir anslutna medan den här datorn är låst eller inaktiv."
+msgstr ""
+"Meddelanden och kontakter förblir anslutna medan den här datorn är låst "
+"eller inaktiv."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -804,6 +813,16 @@ msgstr "Meddelandet skickades inte."
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
 msgstr "Kunde inte läsa daemonens tillstånd.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr "Ingen ansluten enhet heter {}. Kör 'tether status' för att se dem.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
+msgstr "Fler än en enhet heter {}; ange dess fingeravtryck i stället.\n"
 
 #: src/cli/main.cpp
 msgid "Version"
@@ -2157,6 +2176,14 @@ msgstr "Skickar {}…"
 msgid "({0} of {1})"
 msgstr "({0} av {1})"
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr "Skicka till…"
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr "_Avbryt"
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr "Demonen är otillgänglig."
@@ -2164,10 +2191,6 @@ msgstr "Demonen är otillgänglig."
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
 msgstr "Skicka fil"
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
-msgstr "_Avbryt"
 
 #: src/gtk/devices_view.cpp
 msgid "_Send"
@@ -2215,6 +2238,14 @@ msgstr ""
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
 msgstr "Okänd enhet"
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr "Mappar kan inte skickas — välj filer i stället."
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
+msgstr "Ingen enhet är ansluten."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Connected"
@@ -2462,7 +2493,8 @@ msgstr "Släpp aviseringar"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Release messages and contacts while this computer is locked or idle"
-msgstr "Släpp meddelanden och kontakter medan den här datorn är låst eller inaktiv"
+msgstr ""
+"Släpp meddelanden och kontakter medan den här datorn är låst eller inaktiv"
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid ""
@@ -2563,6 +2595,14 @@ msgstr "Öppna på den här fliken"
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
 msgstr "Öppna meddelandefliken på den här konversationen"
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr "Skicka angivna filer och fråga vilken enhet när flera är anslutna"
+
+#: src/gtk/main.cpp
+msgid "FILE…"
+msgstr "FIL…"
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp
 #, c++-format

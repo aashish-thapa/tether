@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=all/allfiles;
+Actions=TetherSend;
+
+[Desktop Action TetherSend]
+Name=Send with Tether
+Icon=tether
+Exec=tether-gtk --send %F

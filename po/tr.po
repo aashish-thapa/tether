@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Turkish\n"
@@ -45,6 +45,10 @@ msgstr "Girişten metin oku ve yerel Wayland panosuna kopyala."
 #: src/cli/main.cpp
 msgid "Send a file through tether."
 msgstr "tether üzerinden bir dosya gönder."
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
+msgstr "--send-file ile bağlı tek bir aygıta gönder (ad veya parmak izi)."
 
 #: src/cli/main.cpp
 msgid "Start the browser Native Messaging Host proxy loop."
@@ -118,7 +122,9 @@ msgstr "iPhone menzil dışına çıkınca oturumu kilitle: on veya off."
 msgid ""
 "Release messages and contacts while this computer is locked or idle: on or "
 "off."
-msgstr "Bu bilgisayar kilitli veya boştayken mesajları ve kişileri bırak: on veya off."
+msgstr ""
+"Bu bilgisayar kilitli veya boştayken mesajları ve kişileri bırak: on veya "
+"off."
 
 #: src/cli/main.cpp
 msgid ""
@@ -803,6 +809,16 @@ msgstr "Mesaj gönderilmedi."
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
 msgstr "Arka plandaki tetherd sürecinin durumu okunamadı.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr "{} adında bağlı aygıt yok. Görmek için 'tether status' çalıştırın.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
+msgstr "{} adında birden fazla aygıt var; bunun yerine parmak izini verin.\n"
 
 #: src/cli/main.cpp
 msgid "Version"
@@ -2154,6 +2170,14 @@ msgstr "{} gönderiliyor…"
 msgid "({0} of {1})"
 msgstr "({1} içinden {0})"
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr "Şuraya gönder…"
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr "_Vazgeç"
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr "Arka plan hizmeti kullanılamıyor."
@@ -2161,10 +2185,6 @@ msgstr "Arka plan hizmeti kullanılamıyor."
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
 msgstr "Dosya gönder"
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
-msgstr "_Vazgeç"
 
 #: src/gtk/devices_view.cpp
 msgid "_Send"
@@ -2210,6 +2230,14 @@ msgstr "Eşleşmiş hiçbir aygıt bağlı değil. Aygıtı açın ve aynı ağa
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
 msgstr "Bilinmeyen aygıt"
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr "Klasörler gönderilemez — bunun yerine dosya seçin."
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
+msgstr "Bağlı aygıt yok."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Connected"
@@ -2560,6 +2588,14 @@ msgstr "Bu sekmede aç"
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
 msgstr "Mesajlar sekmesini bu konuşmada aç"
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr "Verilen dosyaları gönder, birden fazla aygıt bağlıysa hangisine gönderileceğini sor"
+
+#: src/gtk/main.cpp
+msgid "FILE…"
+msgstr "DOSYA…"
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp
 #, c++-format

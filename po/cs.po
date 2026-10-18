@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tether\n"
 "Report-Msgid-Bugs-To: zack@bartel.com\n"
-"POT-Creation-Date: 2026-10-18 15:06-0700\n"
+"POT-Creation-Date: 2026-10-18 15:38-0700\n"
 "PO-Revision-Date: 2026-08-23\n"
 "Last-Translator: Tether project\n"
 "Language-Team: Czech\n"
@@ -45,6 +45,10 @@ msgstr "Načíst text ze vstupu a zkopírovat jej do místní schránky Waylandu
 #: src/cli/main.cpp
 msgid "Send a file through tether."
 msgstr "Odeslat soubor přes tether."
+
+#: src/cli/main.cpp
+msgid "With --send-file, send to one connected device (name or fingerprint)."
+msgstr "S --send-file odeslat na jedno připojené zařízení (název nebo otisk)."
 
 #: src/cli/main.cpp
 msgid "Start the browser Native Messaging Host proxy loop."
@@ -119,7 +123,9 @@ msgstr "Zamknout relaci, když iPhone opustí dosah: on nebo off."
 msgid ""
 "Release messages and contacts while this computer is locked or idle: on or "
 "off."
-msgstr "Uvolnit zprávy a kontakty, když je tento počítač zamčený nebo nečinný: on nebo off."
+msgstr ""
+"Uvolnit zprávy a kontakty, když je tento počítač zamčený nebo nečinný: on "
+"nebo off."
 
 #: src/cli/main.cpp
 msgid ""
@@ -605,12 +611,15 @@ msgstr "Zamykání při opuštění dosahu iPhonem je vypnuté."
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts will be released while this computer is locked or idle."
-msgstr "Zprávy a kontakty budou uvolněny, když je tento počítač zamčený nebo nečinný."
+msgstr ""
+"Zprávy a kontakty budou uvolněny, když je tento počítač zamčený nebo nečinný."
 
 #: src/cli/main.cpp
 msgid ""
 "Messages and contacts stay connected while this computer is locked or idle."
-msgstr "Zprávy a kontakty zůstanou připojené, i když je tento počítač zamčený nebo nečinný."
+msgstr ""
+"Zprávy a kontakty zůstanou připojené, i když je tento počítač zamčený nebo "
+"nečinný."
 
 #: src/cli/main.cpp
 msgid "Use map, pbap, ancs, or all.\n"
@@ -804,6 +813,16 @@ msgstr "Zpráva nebyla odeslána."
 #: src/cli/main.cpp
 msgid "Could not read the daemon's state.\n"
 msgstr "Nepodařilo se přečíst stav démona.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "No connected device named {}. Run 'tether status' to see them.\n"
+msgstr "Žádné připojené zařízení s názvem {}. Spusťte 'tether status' a zobrazte je.\n"
+
+#: src/cli/main.cpp
+#, c++-format
+msgid "More than one device is named {}; pass its fingerprint instead.\n"
+msgstr "Název {} má více zařízení; zadejte místo něj jeho otisk.\n"
 
 #: src/cli/main.cpp
 msgid "Version"
@@ -2155,6 +2174,14 @@ msgstr "Odesílání {}…"
 msgid "({0} of {1})"
 msgstr "({0} z {1})"
 
+#: src/gtk/devices_view.cpp
+msgid "Send to…"
+msgstr "Odeslat do…"
+
+#: src/gtk/devices_view.cpp
+msgid "_Cancel"
+msgstr "_Zrušit"
+
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Daemon unavailable."
 msgstr "Démon není dostupný."
@@ -2162,10 +2189,6 @@ msgstr "Démon není dostupný."
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Send File"
 msgstr "Odeslat soubor"
-
-#: src/gtk/devices_view.cpp
-msgid "_Cancel"
-msgstr "_Zrušit"
 
 #: src/gtk/devices_view.cpp
 msgid "_Send"
@@ -2213,6 +2236,14 @@ msgstr ""
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Unknown Device"
 msgstr "Neznámé zařízení"
+
+#: src/gtk/devices_view.cpp
+msgid "Folders can't be sent — pick files instead."
+msgstr "Složky nelze odeslat — vyberte místo nich soubory."
+
+#: src/gtk/devices_view.cpp
+msgid "No device is connected."
+msgstr "Není připojeno žádné zařízení."
 
 #: src/gtk/devices_view.cpp src/tui/devices.cpp
 msgid "Connected"
@@ -2563,6 +2594,14 @@ msgstr "Otevřít na této kartě"
 #: src/gtk/main.cpp
 msgid "Open the messages tab on this conversation"
 msgstr "Otevřít kartu zpráv na této konverzaci"
+
+#: src/gtk/main.cpp
+msgid "Send the given files, asking which device when several are connected"
+msgstr "Odeslat zadané soubory a při více připojených zařízeních se zeptat, kam"
+
+#: src/gtk/main.cpp
+msgid "FILE…"
+msgstr "SOUBOR…"
 
 #: src/gtk/messages_view.cpp src/gtk/tray.cpp src/tui/main.cpp
 #, c++-format

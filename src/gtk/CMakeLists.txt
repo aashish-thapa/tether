@@ -51,6 +51,10 @@ endif()
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tether-gtk.desktop
         DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
+# Dolphin's right-click "Send with Tether".
+install(FILES tether-send.desktop
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/kio/servicemenus)
+
 # Software centers (GNOME Software, Discover, Flathub) read this listing.
 install(FILES com.tether.desktop.metainfo.xml
         DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
