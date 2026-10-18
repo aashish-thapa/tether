@@ -1,4 +1,5 @@
 #include "notification.hpp"
+#include <charconv>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
@@ -55,6 +56,17 @@ static void redirect_output_to_log() {
     }
 }
 
+// TCP port from TETHER_PORT, else 5134. Zero on an invalid value.
+static uint16_t listen_port() {
+    const char* value = std::getenv("TETHER_PORT");
+    if (!value || !*value)
+        return 5134;
+    const std::string_view text(value);
+    uint16_t port = 0;
+    const auto [end, ec] = std::from_chars(text.data(), text.data() + text.size(), port);
+    return ec == std::errc() && end == text.data() + text.size() ? port : 0;
+}
+
 // How long to let the phone finish with the buds before reclaiming them.
 constexpr int HANDOFF_SETTLE_SECONDS = 2;
 constexpr int HANDOFF_RECLAIM_ATTEMPTS = 3;
@@ -90,7 +102,13 @@ int main(int argc, char** argv) {
     tether::EpollEventLoop loop;
     g_loop = &loop;
 
-    tether::TcpServer tcp_srv(loop, 5134);
+    const uint16_t port = listen_port();
+    if (port == 0) {
+        debug::log(ERR, "Invalid TETHER_PORT: {}", std::getenv("TETHER_PORT"));
+        return 1;
+    }
+
+    tether::TcpServer tcp_srv(loop, port);
     tether::UnixServer unix_srv(loop, tcp_srv);
     if (!unix_srv.start()) {
         debug::log(ERR, "Failed to start Unix server");
@@ -110,7 +128,7 @@ int main(int argc, char** argv) {
         std::string my_fp = tether::Crypto::instance().get_my_fingerprint();
 
         discovery.set_state_callback([](bool available) { tether::set_mdns_available(available); });
-        discovery.publish(hostname, 5134, my_fp);
+        discovery.publish(hostname, port, my_fp);
 
         discovery.start_continuous_browse([&loop, &tcp_srv](const std::vector<tether::DiscoveredDevice>& devices) {
             // Reestablish sessions with peers we already trust.

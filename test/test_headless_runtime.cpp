@@ -103,6 +103,7 @@ namespace {
         fs::path root;
         std::map<std::string, std::string> env;
         std::vector<pid_t> children;
+        uint16_t port = 0;
 
         void SetUp() override {
             char dir[] = "/tmp/tether-h-XXXXXX";
@@ -178,26 +179,25 @@ namespace {
             }
             throw std::runtime_error("child timed out");
         }
-        // The fake phone dials a fixed 127.0.0.1:5134. A daemon already holding
-        // that port takes the pair requests instead, pops its dialogs at the
-        // user, and records the requests in the real runtime dir.
-        static bool port_5134_taken() {
+        // A free loopback port, so the suite never collides with a running tetherd.
+        static uint16_t free_port() {
             int fd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
-            if (fd < 0)
-                return false;
             sockaddr_in address{};
             address.sin_family = AF_INET;
-            address.sin_port = htons(5134);
             address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-            const bool taken = connect(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address)) == 0;
-            close(fd);
-            return taken;
+            socklen_t length = sizeof(address);
+            const bool ok = fd >= 0 && bind(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address)) == 0 &&
+                            getsockname(fd, reinterpret_cast<sockaddr*>(&address), &length) == 0;
+            if (fd >= 0)
+                close(fd);
+            if (!ok)
+                throw std::runtime_error("no free port");
+            return ntohs(address.sin_port);
         }
 
         void start(Peer& local) {
-            if (port_5134_taken())
-                throw std::runtime_error(
-                    "another tetherd is listening on 127.0.0.1:5134; stop it before running this suite");
+            port = free_port();
+            env["TETHER_PORT"] = std::to_string(port);
             spawn({"/usr/bin/dbus-daemon",
                    "--session",
                    "--nofork",
@@ -237,7 +237,7 @@ namespace {
             phone.fd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
             sockaddr_in address{};
             address.sin_family = AF_INET;
-            address.sin_port = htons(5134);
+            address.sin_port = htons(port);
             address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
             ASSERT_EQ(connect(phone.fd, reinterpret_cast<sockaddr*>(&address), sizeof(address)), 0);
             timeval timeout{3, 0};
