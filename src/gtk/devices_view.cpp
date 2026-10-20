@@ -775,11 +775,14 @@ namespace tether::ui {
 
         using PathList = std::vector<std::filesystem::path>;
 
-        // Undecorated so every desktop shows the same card; the window owns the paths until a tile is picked.
+        // A hidden titlebar gives client-side decorations with no title bar, the same card on every desktop.
+        // The window owns the paths until a tile is picked.
         void show_send_picker(PathList paths, const std::vector<std::pair<std::string, std::string>>& devices) {
             GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
             gtk_window_set_title(GTK_WINDOW(window), _("Send to…"));
-            gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
+            GtkWidget* titlebar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+            gtk_widget_set_no_show_all(titlebar, TRUE);
+            gtk_window_set_titlebar(GTK_WINDOW(window), titlebar);
             gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
             gtk_window_set_skip_taskbar_hint(GTK_WINDOW(window), TRUE);
             gtk_window_set_keep_above(GTK_WINDOW(window), TRUE);

@@ -141,15 +141,12 @@ namespace tether::ui {
 }
 
 /* "Send to" picker */
-.tether-picker-window { background-color: transparent; }
-.tether-picker {
-    background-color: @theme_bg_color;
-    border: 1px solid alpha(@theme_fg_color, 0.12);
-    border-radius: 18px;
-    padding: 20px 24px;
-    margin: 12px;
-    box-shadow: 0 4px 16px alpha(black, 0.3);
+.tether-picker-window, .tether-picker-window decoration { border-radius: 12px; }
+.tether-picker-window { background-color: @theme_bg_color; }
+.tether-picker-window decoration {
+    box-shadow: 0 4px 16px alpha(black, 0.3), 0 0 0 1px alpha(@theme_fg_color, 0.12);
 }
+.tether-picker { padding: 20px 24px; }
 .tether-picker-title { font-size: 17px; font-weight: bold; }
 .tether-picker-tile {
     min-width: 128px;
