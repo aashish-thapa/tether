@@ -83,6 +83,8 @@ namespace tether {
         std::string fingerprint;
         std::string device_name;
         bool paired = false;
+        // "phone", "tablet" or "computer"
+        std::string device = "computer";
     };
 
     static std::vector<ReceivedFileInfo> recent_received_files;
@@ -889,6 +891,7 @@ namespace tether {
             item["fingerprint"] = client.fingerprint;
             item["device_name"] = client.device_name;
             item["paired"] = client.paired;
+            item["device"] = client.device;
             connected_clients.push_back(item);
         }
         snapshot["connected_clients"] = connected_clients;
@@ -1645,13 +1648,13 @@ namespace tether {
                         std::string payload = "{\"status\":\"ok\"}\n";
                         write_plain_packet(client_fd, payload);
                         continue;
-                    } else if (j.contains("command") &&
-                               (j["command"] == "file_start" || j["command"] == "file_chunk" ||
-                                j["command"] == "file_end")) {
+                    } else if (j.contains("command") && (j["command"] == "file_start" || j["command"] == "file_chunk" ||
+                                                         j["command"] == "file_end")) {
                         // "target" picks one peer by fingerprint; without it every peer gets the file.
                         // ponytail: target is forwarded as-is, receivers ignore unknown keys.
                         const std::string target = j.value("target", "");
-                        const size_t sent = target.empty() ? broadcast_tcp_message(msg) : send_tcp_message_to(target, msg);
+                        const size_t sent =
+                            target.empty() ? broadcast_tcp_message(msg) : send_tcp_message_to(target, msg);
                         if (sent == 0) {
                             nlohmann::json resp;
                             resp["command"] = "error";
@@ -2303,6 +2306,21 @@ namespace tether {
                         if (features.is_array() &&
                             std::find(features.begin(), features.end(), "clipboard_image") != features.end())
                             set_session_clipboard_images(client_fd);
+                        // TODO: HACK: once release sends "device", drop the "phone" fallback
+                        // and stop inferring Apple-vs-Linux from whether a hello is present
+                        auto remote_it = connected_remote_clients.find(client_fd);
+                        if (remote_it != connected_remote_clients.end())
+                            remote_it->second.device = j.value("device", "phone");
+                        if (remote_it != connected_remote_clients.end() && remote_it->second.paired) {
+                            const auto& remote = remote_it->second;
+                            nlohmann::json event{{"command", "client_connected"},
+                                                 {"fingerprint", remote.fingerprint},
+                                                 {"device_name", remote.device_name},
+                                                 {"address", remote.address},
+                                                 {"paired", true},
+                                                 {"device", remote.device}};
+                            broadcast_local_event(event.dump());
+                        }
                         nlohmann::json resp{{"command", "hello"}};
                         resp["features"] = nlohmann::json::array({"clipboard_image"});
                         std::string payload = resp.dump() + "\n";
@@ -2426,7 +2444,8 @@ namespace tether {
                                        {"fingerprint", fingerprint},
                                        {"device_name", device_name},
                                        {"address", remote_it->second.address},
-                                       {"paired", true}};
+                                       {"paired", true},
+                                       {"device", remote_it->second.device}};
         broadcast_local_event(connected_event.dump());
     }
 

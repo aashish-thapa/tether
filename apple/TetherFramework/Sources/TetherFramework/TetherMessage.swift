@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
 // MARK: - Command Enum
 
 // All known command types in the Tether protocol.
@@ -67,6 +71,8 @@ public struct TetherMessage: Codable, Sendable {
 
     // hello
     public var features: [String]?
+    // "phone", "tablet" or "computer", so the desktop can show the right icon.
+    public var device: String?
 
     // Pairing
     public var deviceName: String?
@@ -83,7 +89,7 @@ public struct TetherMessage: Codable, Sendable {
         case command, content, filename, size
         case transferId = "transfer_id"
         case chunkIndex = "chunk_index"
-        case data, clipboard, features
+        case data, clipboard, features, device
         case deviceName = "device_name"
         case otp, source
         case status, message
@@ -103,7 +109,8 @@ public struct TetherMessage: Codable, Sendable {
         status: String? = nil,
         message: String? = nil,
         clipboard: String? = nil,
-        features: [String]? = nil
+        features: [String]? = nil,
+        device: String? = nil
     ) {
         self.command = command
         self.content = content
@@ -119,6 +126,7 @@ public struct TetherMessage: Codable, Sendable {
         self.message = message
         self.clipboard = clipboard
         self.features = features
+        self.device = device
     }
 }
 
@@ -135,9 +143,17 @@ extension TetherMessage {
         TetherMessage(command: TetherCommand.openUrl.rawValue, content: url)
     }
 
+    static var localDeviceKind: String {
+        #if canImport(UIKit)
+        UIDevice.current.userInterfaceIdiom == .pad ? "tablet" : "phone"
+        #else
+        "computer"
+        #endif
+    }
+
     // Create a `hello` announcing the optional features this client supports.
     public static func hello(features: [String]) -> TetherMessage {
-        TetherMessage(command: TetherCommand.hello.rawValue, features: features)
+        TetherMessage(command: TetherCommand.hello.rawValue, features: features, device: localDeviceKind)
     }
 
     // Create a `clipboard_get` request.

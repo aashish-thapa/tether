@@ -139,6 +139,29 @@ namespace tether::ui {
     border-color: @theme_selected_bg_color;
     background-color: alpha(@theme_selected_bg_color, 0.12);
 }
+
+/* "Send to" picker */
+.tether-picker-window, .tether-picker-window decoration { border-radius: 12px; }
+.tether-picker-window { background-color: @theme_bg_color; }
+.tether-picker-window decoration {
+    box-shadow: 0 4px 16px alpha(black, 0.3), 0 0 0 1px alpha(@theme_fg_color, 0.12);
+}
+.tether-picker { padding: 20px 24px; }
+.tether-picker-title { font-size: 17px; font-weight: bold; }
+.tether-picker-tile {
+    min-width: 128px;
+    min-height: 128px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid alpha(@theme_fg_color, 0.09);
+    background-image: none;
+    background-color: mix(@theme_bg_color, @theme_fg_color, 0.045);
+    box-shadow: none;
+}
+.tether-picker-tile:hover, .tether-picker-tile:focus {
+    border-color: @theme_selected_bg_color;
+    background-color: alpha(@theme_selected_bg_color, 0.15);
+}
 )CSS";
         // xdg-desktop-portal Settings: 0 = no preference, 1 = dark, 2 = light.
         void apply_color_scheme(guint32 scheme) {
