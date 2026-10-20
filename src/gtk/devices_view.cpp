@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <deque>
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <string>
 #include <tether/crypto.hpp>
@@ -25,6 +26,7 @@ namespace tether::ui {
             std::vector<tether::DiscoveredDevice> pending_pairing_requests;
             std::vector<std::pair<std::string, std::string>> paired_devices; // fp, name
             std::vector<std::string> connected_fps;                          // active connections
+            std::map<std::string, std::string> device_kinds; // fp -> "phone", "tablet" or "computer"
 
             // false when avahi-daemon is down
             bool mdns_ok = true;
@@ -720,8 +722,6 @@ namespace tether::ui {
             daemon_send(j);
         }
 
-        // skipped counts items that came in with the batch but are not sendable
-        // files, so the final status can admit they were dropped.
         // The window may be hidden in the tray when a file manager starts a send.
         void notify_if_hidden(const std::string& message) {
             GtkWidget* window = main_window();
@@ -733,56 +733,8 @@ namespace tether::ui {
             g_object_unref(notification);
         }
 
-        // Peers report no platform, so the icon is guessed from the name.
-        const char* device_icon(const std::string& name) {
-            if (name.find("iPad") != std::string::npos)
-                return "tablet-symbolic";
-            if (name.find("iPhone") != std::string::npos)
-                return "phone-symbolic";
-            return "computer-symbolic";
-        }
-
-        // Returns the chosen fingerprint, empty when cancelled.
-        std::string pick_send_target(const std::vector<std::pair<std::string, std::string>>& devices) {
-            GtkWidget* window = main_window();
-            GtkWindow* parent = window && gtk_widget_get_visible(window) ? GTK_WINDOW(window) : nullptr;
-            GtkWidget* dialog = gtk_dialog_new_with_buttons(
-                _("Send to…"), parent, GTK_DIALOG_MODAL, _("_Cancel"), GTK_RESPONSE_CANCEL, nullptr);
-            gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
-
-            GtkWidget* list = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
-            gtk_container_set_border_width(GTK_CONTAINER(list), 18);
-            for (size_t i = 0; i < devices.size(); ++i) {
-                GtkWidget* content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
-                gtk_box_pack_start(GTK_BOX(content),
-                                   gtk_image_new_from_icon_name(device_icon(devices[i].second), GTK_ICON_SIZE_DIALOG),
-                                   FALSE,
-                                   FALSE,
-                                   0);
-                gtk_box_pack_start(GTK_BOX(content), gtk_label_new(devices[i].second.c_str()), FALSE, FALSE, 0);
-                GtkWidget* button = gtk_button_new();
-                gtk_container_add(GTK_CONTAINER(button), content);
-                gtk_widget_set_tooltip_text(button, devices[i].second.c_str());
-                g_object_set_data(G_OBJECT(button), "index", GINT_TO_POINTER(static_cast<gint>(i)));
-                g_signal_connect(button,
-                                 "clicked",
-                                 G_CALLBACK(+[](GtkWidget* button, gpointer dialog) {
-                                     gtk_dialog_response(GTK_DIALOG(dialog),
-                                                         GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "index")));
-                                 }),
-                                 dialog);
-                gtk_box_pack_start(GTK_BOX(list), button, TRUE, TRUE, 0);
-            }
-            gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), list, TRUE, TRUE, 0);
-            gtk_widget_show_all(dialog);
-
-            const gint response = gtk_dialog_run(GTK_DIALOG(dialog));
-            gtk_widget_destroy(dialog);
-            if (response < 0 || static_cast<size_t>(response) >= devices.size())
-                return "";
-            return devices[static_cast<size_t>(response)].first;
-        }
-
+        // skipped counts items that came in with the batch but are not sendable
+        // files, so the final status can admit they were dropped.
         // An empty target sends to every connected device.
         void queue_files(std::vector<std::filesystem::path> paths, const std::string& target, size_t skipped = 0) {
             if (paths.empty())
@@ -805,6 +757,109 @@ namespace tether::ui {
                 g_devices.send_queue.emplace_back(std::move(path), target);
             if (idle)
                 start_next_send();
+        }
+
+        // Fallbacks cover themes without the Adwaita names, such as Breeze.
+        GIcon* device_icon(const std::string& kind) {
+            if (kind == "phone") {
+                const char* names[] = {"phone-symbolic", "smartphone-symbolic", "phone"};
+                return g_themed_icon_new_from_names(const_cast<char**>(names), G_N_ELEMENTS(names));
+            }
+            if (kind == "tablet") {
+                const char* names[] = {"tablet-symbolic", "computer-apple-ipad-symbolic", "tablet"};
+                return g_themed_icon_new_from_names(const_cast<char**>(names), G_N_ELEMENTS(names));
+            }
+            const char* names[] = {"computer-symbolic", "computer"};
+            return g_themed_icon_new_from_names(const_cast<char**>(names), G_N_ELEMENTS(names));
+        }
+
+        using PathList = std::vector<std::filesystem::path>;
+
+        // Undecorated so every desktop shows the same card; the window owns the paths until a tile is picked.
+        void show_send_picker(PathList paths, const std::vector<std::pair<std::string, std::string>>& devices) {
+            GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+            gtk_window_set_title(GTK_WINDOW(window), _("Send to…"));
+            gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
+            gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+            gtk_window_set_skip_taskbar_hint(GTK_WINDOW(window), TRUE);
+            gtk_window_set_keep_above(GTK_WINDOW(window), TRUE);
+            gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DIALOG);
+            gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+            if (GdkVisual* rgba = gdk_screen_get_rgba_visual(gtk_widget_get_screen(window)))
+                gtk_widget_set_visual(window, rgba);
+            style(window, "tether-picker-window");
+            g_object_set_data_full(
+                G_OBJECT(window), "paths", new PathList(std::move(paths)), [](gpointer data) {
+                    delete static_cast<PathList*>(data);
+                });
+            g_signal_connect(window,
+                             "key-press-event",
+                             G_CALLBACK(+[](GtkWidget* window, GdkEventKey* event, gpointer) -> gboolean {
+                                 if (event->keyval != GDK_KEY_Escape)
+                                     return FALSE;
+                                 gtk_widget_destroy(window);
+                                 return TRUE;
+                             }),
+                             nullptr);
+
+            GtkWidget* card = gtk_box_new(GTK_ORIENTATION_VERTICAL, 18);
+            style(card, "tether-picker");
+            GtkWidget* title = gtk_label_new(_("Send to…"));
+            style(title, "tether-picker-title");
+            gtk_box_pack_start(GTK_BOX(card), title, FALSE, FALSE, 0);
+
+            GtkWidget* tiles = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+            gtk_box_set_homogeneous(GTK_BOX(tiles), TRUE);
+            gtk_widget_set_halign(tiles, GTK_ALIGN_CENTER);
+            GtkWidget* first_tile = nullptr;
+            for (const auto& [fp, name] : devices) {
+                auto kind = g_devices.device_kinds.find(fp);
+                GIcon* icon = device_icon(kind == g_devices.device_kinds.end() ? "computer" : kind->second);
+                GtkWidget* image = gtk_image_new_from_gicon(icon, GTK_ICON_SIZE_DIALOG);
+                g_object_unref(icon);
+                gtk_image_set_pixel_size(GTK_IMAGE(image), 64);
+
+                GtkWidget* label = gtk_label_new(name.c_str());
+                gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
+                gtk_label_set_max_width_chars(GTK_LABEL(label), 14);
+
+                GtkWidget* content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+                gtk_widget_set_valign(content, GTK_ALIGN_CENTER);
+                gtk_box_pack_start(GTK_BOX(content), image, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(content), label, FALSE, FALSE, 0);
+
+                GtkWidget* tile = gtk_button_new();
+                style(tile, "tether-picker-tile");
+                gtk_container_add(GTK_CONTAINER(tile), content);
+                gtk_widget_set_tooltip_text(tile, name.c_str());
+                g_object_set_data_full(G_OBJECT(tile), "fp", g_strdup(fp.c_str()), g_free);
+                g_signal_connect(tile,
+                                 "clicked",
+                                 G_CALLBACK(+[](GtkWidget* tile, gpointer) {
+                                     GtkWidget* window = gtk_widget_get_toplevel(tile);
+                                     auto* paths = static_cast<PathList*>(g_object_get_data(G_OBJECT(window), "paths"));
+                                     queue_files(std::move(*paths),
+                                                 static_cast<const char*>(g_object_get_data(G_OBJECT(tile), "fp")));
+                                     gtk_widget_destroy(window);
+                                 }),
+                                 nullptr);
+                gtk_box_pack_start(GTK_BOX(tiles), tile, FALSE, FALSE, 0);
+                if (!first_tile)
+                    first_tile = tile;
+            }
+            gtk_box_pack_start(GTK_BOX(card), tiles, FALSE, FALSE, 0);
+
+            GtkWidget* cancel = gtk_button_new_with_mnemonic(_("_Cancel"));
+            gtk_button_set_relief(GTK_BUTTON(cancel), GTK_RELIEF_NONE);
+            gtk_widget_set_halign(cancel, GTK_ALIGN_CENTER);
+            g_signal_connect_swapped(cancel, "clicked", G_CALLBACK(gtk_widget_destroy), window);
+            gtk_box_pack_start(GTK_BOX(card), cancel, FALSE, FALSE, 0);
+
+            gtk_container_add(GTK_CONTAINER(window), card);
+            gtk_widget_show_all(window);
+            if (first_tile)
+                gtk_widget_grab_focus(first_tile);
+            gtk_window_present(GTK_WINDOW(window));
         }
 
         void on_choose_file(GtkWidget*, gpointer) {
@@ -931,6 +986,7 @@ namespace tether::ui {
                 for (auto& c : j["connected_clients"]) {
                     if (c.value("paired", false)) {
                         g_devices.connected_fps.push_back(c.value("fingerprint", ""));
+                        g_devices.device_kinds[c.value("fingerprint", "")] = c.value("device", "computer");
                     } else {
                         tether::DiscoveredDevice dev;
                         dev.fingerprint = c.value("fingerprint", "");
@@ -989,9 +1045,10 @@ namespace tether::ui {
             notify_if_hidden(message);
             return;
         }
-        const std::string target = devices.size() == 1 ? devices.front().first : pick_send_target(devices);
-        if (!target.empty())
-            queue_files(std::move(paths), target);
+        if (devices.size() == 1)
+            queue_files(std::move(paths), devices.front().first);
+        else
+            show_send_picker(std::move(paths), devices);
     }
 
     void devices_view_handle_disconnect() {
@@ -1257,6 +1314,7 @@ namespace tether::ui {
         }
         if (command == "client_connected") {
             std::string fp = event.value("fingerprint", "");
+            g_devices.device_kinds[fp] = event.value("device", "computer");
             if (std::find(g_devices.connected_fps.begin(), g_devices.connected_fps.end(), fp) ==
                 g_devices.connected_fps.end()) {
                 g_devices.connected_fps.push_back(fp);
