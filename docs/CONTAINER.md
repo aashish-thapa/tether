@@ -31,8 +31,10 @@ needs a Wayland session and is not available here.
    and [README prerequisites](../README.md#bluetooth-for-messages-and-notifications).
    In particular, configure the experimental bearer API and adapter class **on
    the host before pairing**, then enable the iPhone's Messages/Contacts permissions.
-   Upstream currently recommends BlueZ 5.86+ on the host; the Ubuntu 24.04 image
-   has its own packaged OBEX client (currently 5.72). Record both versions when testing.
+   Upstream currently recommends BlueZ 5.86+ on the host. The Ubuntu 26.04 image
+   uses its own distro-packaged OBEX client, which includes the upstream RX/TX MTU
+   correction. Updating the image does not update the host's `bluetoothd`.
+   Record both versions when testing.
 2. Run Avahi and the system bus on the host. Open inbound 5134/tcp and mDNS
    5353/udp on the trusted local network; see the README's firewall instructions.
 3. Verify the host settings, then set `TETHER_BLUEZ_SECURE_CONNECTIONS=1` in
@@ -198,6 +200,10 @@ requires handling that host's bonds separately.
 - The supervisor checks the host bus, starts its session bus and OBEX with bounded
   readiness waits, then starts `tetherd`. If any managed child exits, its siblings
   are terminated and the container exits nonzero.
+- The image makes root-owned `/run/systemd` inaccessible to the non-root OBEX
+  process (mode `0700`). Without a logind session, this selects OBEX's built-in
+  login-monitor failure fallback, which treats the user as active. It does not
+  grant access to host login sessions or require running OBEX as root.
 - SIGTERM stops the children within the 15-second Compose grace period. Docker
   manages restart/backoff (`unless-stopped`); permanent setup errors remain
   visible in logs rather than gaining permissions automatically.

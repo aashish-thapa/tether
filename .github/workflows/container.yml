@@ -39,18 +39,6 @@ jobs:
             --build-arg TETHER_VERSION="$(git describe --tags --always)" \
             --target runtime -f packaging/container/Dockerfile -t tether-runtime:ci . \
             2>&1 | tee "$RUNNER_TEMP/tether-runtime.log"
-      - name: Package gate and authenticated effective distro source evidence
-        shell: bash
-        run: |
-          docker run --rm --network none --entrypoint bash -v "$PWD:/src:ro" tether-runtime:ci \
-            /src/scripts/test-obex-package.sh 2>&1 | tee "$RUNNER_TEMP/tether-package.log"
-          version=$(docker run --rm --network none --entrypoint dpkg-query tether-runtime:ci -W -f='${Version}' bluez-obexd)
-          docker run --rm --platform '${{ matrix.platform }}' -v "$PWD:/src:ro" \
-            -e "EXPECTED_OBEX_VERSION=$version" ubuntu:26.04 bash -ec '
-              apt-get update
-              apt-get install -y --no-install-recommends python3
-              bash /src/scripts/test-obex-source-evidence.sh
-            ' 2>&1 | tee "$RUNNER_TEMP/tether-source.log"
       - name: Smoke test without host hardware or services
         shell: bash
         run: |

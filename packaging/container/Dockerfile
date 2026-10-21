@@ -33,8 +33,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libwayland-client0 libavahi-client3 libssl3t64 libglib2.0-0t64 libsecret-1-0 libnotify4 \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /usr/local/libexec /data /downloads /run/tether-runtime /run/systemd/users \
-    # Headless OBEX must use its built-in login-monitor failure fallback. Never
-    # import a host login session or fabricate an active user/seat in the image.
+    # Deny the non-root OBEX login monitor access to /run/systemd/users so it
+    # uses its active-user fallback; no logind session exists in this container.
     && chmod 700 /run/systemd \
     && obexd="$(dpkg -L bluez-obexd | grep '/obexd$')" \
     && test -x "$obexd" && "$obexd" --help | grep -q -- '--nodetach' \
