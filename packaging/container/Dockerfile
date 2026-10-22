@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:24.04 AS build
+FROM ubuntu:26.04 AS build
 RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ cmake ninja-build git pkg-config ca-certificates \
     libwayland-dev libavahi-client-dev libssl-dev libglib2.0-dev libsecret-1-dev \
@@ -27,12 +27,15 @@ ENV HOME=/test-home
 USER 1000:1000
 RUN ctest --output-on-failure -j 4
 
-FROM ubuntu:24.04 AS runtime
+FROM ubuntu:26.04 AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash coreutils tini dbus-daemon dbus-bin libglib2.0-bin bluez-obexd \
     libwayland-client0 libavahi-client3 libssl3t64 libglib2.0-0t64 libsecret-1-0 libnotify4 \
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /usr/local/libexec /data /downloads /run/tether-runtime \
+    && mkdir -p /usr/local/libexec /data /downloads /run/tether-runtime /run/systemd/users \
+    # Deny the non-root OBEX login monitor access to /run/systemd/users so it
+    # uses its active-user fallback; no logind session exists in this container.
+    && chmod 700 /run/systemd \
     && obexd="$(dpkg -L bluez-obexd | grep '/obexd$')" \
     && test -x "$obexd" && "$obexd" --help | grep -q -- '--nodetach' \
     && ln -s "$obexd" /usr/local/libexec/tether-obexd \
