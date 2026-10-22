@@ -14,6 +14,7 @@
 #include <tether/log.hpp>
 #include <tether/net.hpp>
 #include <thread>
+#include <unordered_map>
 #include <unordered_set>
 
 namespace tether {
@@ -106,6 +107,46 @@ namespace tether {
 
         // Set once during startup, before any notification exists.
         std::function<void(const std::string&, const std::string&)> g_copy_handler;
+        std::function<void(const std::string&, const std::string&)> g_reply_handler;
+
+        // Server notification id -> conversation, for notifications showing an
+        // inline reply field. Touched only on the notifier's thread.
+        std::unordered_map<guint32, std::string> g_reply_threads;
+
+        guint32 notification_id(NotifyNotification* notification) {
+            gint id = 0;
+            g_object_get(notification, "id", &id, nullptr);
+            return static_cast<guint32>(id);
+        }
+
+        // Asked per notification rather than cached: the server can be swapped
+        // or restarted while tetherd runs.
+        bool server_supports_inline_reply() {
+            bool supported = false;
+            GList* caps = notify_get_server_caps();
+            for (GList* cap = caps; cap; cap = cap->next) {
+                if (g_strcmp0(static_cast<const char*>(cap->data), "inline-reply") == 0)
+                    supported = true;
+            }
+            g_list_free_full(caps, g_free);
+            return supported;
+        }
+
+        // The servers emit this just before closing the notification.
+        void on_notification_replied(
+            GDBusConnection*, const char*, const char*, const char*, const char*, GVariant* parameters, gpointer) {
+            guint32 id = 0;
+            const char* text = nullptr;
+            g_variant_get(parameters, "(u&s)", &id, &text);
+
+            const auto it = g_reply_threads.find(id);
+            if (it == g_reply_threads.end())
+                return;
+            const std::string thread = it->second;
+            g_reply_threads.erase(it);
+            if (g_reply_handler && text && *text)
+                g_reply_handler(thread, text);
+        }
 
         void free_request(gpointer data) { delete static_cast<NotificationRequest*>(data); }
 
@@ -232,7 +273,10 @@ namespace tether {
             launch_uri(action->payload);
         }
 
-        void on_notification_closed(NotifyNotification* notification, gpointer) { g_object_unref(notification); }
+        void on_notification_closed(NotifyNotification* notification, gpointer) {
+            g_reply_threads.erase(notification_id(notification));
+            g_object_unref(notification);
+        }
 
         gboolean show_notification_on_main(gpointer user_data) {
             std::unique_ptr<NotificationRequest> request(static_cast<NotificationRequest*>(user_data));
@@ -304,6 +348,8 @@ namespace tether {
             if (has_actions)
                 g_signal_connect(notification, "closed", G_CALLBACK(on_notification_closed), nullptr);
 
+            const bool inline_reply = !spec->reply_thread.empty() && g_reply_handler && server_supports_inline_reply();
+
             if (!spec->reply_thread.empty()) {
                 notify_notification_add_action(notification,
                                                "default",
@@ -311,12 +357,26 @@ namespace tether {
                                                on_reply_action,
                                                new NotificationActionData{spec->reply_thread},
                                                free_action_data);
-                notify_notification_add_action(notification,
-                                               "reply",
-                                               _("Reply"),
-                                               on_reply_action,
-                                               new NotificationActionData{spec->reply_thread},
-                                               free_action_data);
+                if (inline_reply) {
+                    // The server answers with NotificationReplied rather than
+                    // ActionInvoked, so this callback only runs on servers that
+                    // treat "inline-reply" as a plain button.
+                    notify_notification_add_action(notification,
+                                                   "inline-reply",
+                                                   _("Reply"),
+                                                   on_reply_action,
+                                                   new NotificationActionData{spec->reply_thread},
+                                                   free_action_data);
+                    notify_notification_set_hint(
+                        notification, "x-kde-reply-placeholder-text", g_variant_new_string(_("Reply…")));
+                } else {
+                    notify_notification_add_action(notification,
+                                                   "reply",
+                                                   _("Reply"),
+                                                   on_reply_action,
+                                                   new NotificationActionData{spec->reply_thread},
+                                                   free_action_data);
+                }
             }
 
             if (!spec->otp_code.empty()) {
@@ -346,6 +406,8 @@ namespace tether {
                 g_object_unref(notification);
                 return G_SOURCE_REMOVE;
             }
+            if (inline_reply)
+                g_reply_threads[notification_id(notification)] = spec->reply_thread;
             if (!has_actions)
                 g_object_unref(notification);
             return G_SOURCE_REMOVE;
@@ -358,6 +420,8 @@ namespace tether {
         GMainLoop* loop = nullptr;
         std::thread thread;
         bool initialized = false;
+        GDBusConnection* bus = nullptr;
+        guint reply_subscription = 0;
     };
 
     DesktopNotifier::DesktopNotifier() : impl_(std::make_unique<Impl>()) {}
@@ -380,6 +444,10 @@ namespace tether {
             impl_->thread.join();
         }
 
+        if (impl_->bus) {
+            g_dbus_connection_signal_unsubscribe(impl_->bus, impl_->reply_subscription);
+            g_object_unref(impl_->bus);
+        }
         g_main_loop_unref(impl_->loop);
         g_main_context_unref(impl_->context);
         notify_uninit();
@@ -397,13 +465,32 @@ namespace tether {
 
         impl_->context = g_main_context_new();
         impl_->loop = g_main_loop_new(impl_->context, FALSE);
-        impl_->thread = std::thread([ctx = impl_->context, loop = impl_->loop]() {
-            g_main_context_push_thread_default(ctx);
+        impl_->thread = std::thread([impl = impl_.get()]() {
+            g_main_context_push_thread_default(impl->context);
             // Walking the icon themes takes long enough to be worth doing before
             // the first notification rather than during it.
             installed_icons();
-            g_main_loop_run(loop);
-            g_main_context_pop_thread_default(ctx);
+            // Subscribed from this thread so replies are dispatched on the same
+            // context that owns g_reply_threads.
+            GError* error = nullptr;
+            impl->bus = g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, &error);
+            if (impl->bus) {
+                impl->reply_subscription = g_dbus_connection_signal_subscribe(impl->bus,
+                                                                              "org.freedesktop.Notifications",
+                                                                              "org.freedesktop.Notifications",
+                                                                              "NotificationReplied",
+                                                                              "/org/freedesktop/Notifications",
+                                                                              nullptr,
+                                                                              G_DBUS_SIGNAL_FLAGS_NONE,
+                                                                              on_notification_replied,
+                                                                              nullptr,
+                                                                              nullptr);
+            } else {
+                debug::log(ERR, "No session bus for notification replies: {}", error ? error->message : "unknown");
+                g_clear_error(&error);
+            }
+            g_main_loop_run(impl->loop);
+            g_main_context_pop_thread_default(impl->context);
         });
         impl_->initialized = true;
         return true;
@@ -412,6 +499,11 @@ namespace tether {
     void DesktopNotifier::set_copy_handler(
         std::function<void(const std::string& code, const std::string& handle)> handler) {
         g_copy_handler = std::move(handler);
+    }
+
+    void DesktopNotifier::set_reply_handler(
+        std::function<void(const std::string& thread, const std::string& body)> handler) {
+        g_reply_handler = std::move(handler);
     }
 
     void DesktopNotifier::notify(const NotificationSpec& spec) {

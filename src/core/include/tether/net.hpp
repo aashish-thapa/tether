@@ -32,6 +32,14 @@ namespace tether {
     void unregister_local_subscriber(int fd);
     void broadcast_local_event(const std::string& msg, int exclude_fd = -1);
 
+    // Sends an iPhone message over MAP on a worker thread and broadcasts the
+    // result (and the sent message, on success) to local subscribers.
+    // on_done, if set, runs on that worker thread afterwards.
+    void send_bt_message_async(const std::string& thread,
+                               const std::string& body,
+                               const std::string& operation_id = {},
+                               std::function<void(bool sent, const std::string& error)> on_done = {});
+
     // The mDNS peers the daemon currently knows of.
     void set_discovered_devices(const nlohmann::json& devices);
 

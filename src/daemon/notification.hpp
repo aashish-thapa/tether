@@ -42,6 +42,12 @@ namespace tether {
         // responsible for any thread hop it needs.
         void set_copy_handler(std::function<void(const std::string& code, const std::string& handle)> handler);
 
+        // Where text typed into a message notification's inline reply field
+        // goes, along with the spec's reply_thread. Only servers advertising
+        // the "inline-reply" capability show the field; others keep the plain
+        // Reply action. Called on the notifier's own thread.
+        void set_reply_handler(std::function<void(const std::string& thread, const std::string& body)> handler);
+
         void notify_file_arrived(const std::filesystem::path& path);
 
         void notify(const NotificationSpec& spec);

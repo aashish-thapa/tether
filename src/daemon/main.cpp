@@ -208,6 +208,13 @@ int main(int argc, char** argv) {
             tether::bluetooth::mark_messages_read_async({handle}, true);
     });
 
+    notifier.set_reply_handler([&notifier](const std::string& thread, const std::string& body) {
+        tether::send_bt_message_async(thread, body, {}, [&notifier](bool sent, const std::string& error) {
+            if (!sent)
+                notifier.notify({_("Messages"), _("Reply not sent"), error, {"dialog-error"}});
+        });
+    });
+
     if (notifier_ready) {
         int mdns_warn_fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
         if (mdns_warn_fd >= 0) {

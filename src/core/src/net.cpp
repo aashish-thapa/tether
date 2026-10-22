@@ -614,6 +614,34 @@ namespace tether {
             event["operation_id"] = operation_id;
     }
 
+    void send_bt_message_async(const std::string& thread,
+                               const std::string& body,
+                               const std::string& operation_id,
+                               std::function<void(bool sent, const std::string& error)> on_done) {
+        // PushMessage is a blocking OBEX transfer, so it cannot
+        // run on the loop that has to keep serving the UI.
+        std::thread([thread, body, operation_id, on_done = std::move(on_done)]() {
+            std::string err;
+            bluetooth::Message sent;
+            nlohmann::json event;
+            event["command"] = "bt_send_result";
+            event["thread"] = thread;
+            set_operation_id(event, operation_id);
+            const bool success = bluetooth::send_message(thread, body, sent, err);
+            event["success"] = success;
+            if (success) {
+                nlohmann::json message = bluetooth::to_json(sent);
+                message["command"] = "bt_message";
+                broadcast_local_event(message.dump());
+            } else {
+                event["message"] = err;
+            }
+            broadcast_local_event(event.dump());
+            if (on_done)
+                on_done(success, err);
+        }).detach();
+    }
+
     // Runs on the BlueZ monitor's GLib thread, same as the local dialog it replaces.
     static bool ask_client_to_confirm(const std::string& code, const std::string& operation_id) {
         {
@@ -1365,28 +1393,9 @@ namespace tether {
                         bluetooth::mark_messages_read_async(std::move(handles), j.value("read", true));
                     } else if (j.contains("command") && j["command"] == "bt_send_message" && j.contains("thread") &&
                                j.contains("body")) {
-                        std::string thread = j["thread"];
-                        std::string body = j["body"];
-                        const std::string operation_id = j.value("operation_id", std::string{});
-                        // PushMessage is a blocking OBEX transfer, so it cannot
-                        // run on the loop that has to keep serving the UI.
-                        std::thread([thread, body, operation_id]() {
-                            std::string err;
-                            bluetooth::Message sent;
-                            nlohmann::json event;
-                            event["command"] = "bt_send_result";
-                            event["thread"] = thread;
-                            set_operation_id(event, operation_id);
-                            event["success"] = bluetooth::send_message(thread, body, sent, err);
-                            if (event["success"]) {
-                                nlohmann::json message = bluetooth::to_json(sent);
-                                message["command"] = "bt_message";
-                                broadcast_local_event(message.dump());
-                            } else {
-                                event["message"] = err;
-                            }
-                            broadcast_local_event(event.dump());
-                        }).detach();
+                        send_bt_message_async(j["thread"].get<std::string>(),
+                                              j["body"].get<std::string>(),
+                                              j.value("operation_id", std::string{}));
                     } else if (j.contains("command") && j["command"] == "bt_solicit") {
                         std::thread([]() {
                             nlohmann::json event;
