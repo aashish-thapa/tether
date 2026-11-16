@@ -28,6 +28,18 @@ namespace tether::bluetooth {
     // email, or the raw sender ID when it is neither.
     std::string display_address(const VCardParty& party);
 
+    // How a message's conversation was decided. MAP names only the sender, so a
+    // group message looks one-to-one unless its Messages notification says otherwise.
+    enum class ThreadEvidence {
+        // Group detection is off, so every message is filed under its sender.
+        SenderOnly,
+        // A matching Messages notification confirmed the conversation.
+        Notification,
+        // Group detection found no single matching notification, so this may be
+        // a group message filed under its sender. Not a safe reply route.
+        Unconfirmed,
+    };
+
     struct Message {
         std::string handle;
         std::string object_path;
@@ -40,6 +52,8 @@ namespace tether::bluetooth {
         bool outgoing = false;
         bool read = false;
         std::string folder;
+        // Decided when the message arrives; not persisted.
+        ThreadEvidence thread_evidence = ThreadEvidence::SenderOnly;
 
         bool operator==(const Message&) const = default;
     };

@@ -2,6 +2,7 @@
 
 #include "tether/bluetooth/bmessage.hpp"
 #include "tether/bluetooth/contacts.hpp"
+#include "tether/bluetooth/messages.hpp"
 
 #include <cstdint>
 #include <map>
@@ -47,10 +48,16 @@ namespace tether::bluetooth {
     };
 
     enum class Correlation {
+        // One notification matched, and it describes a group.
         Matched,
+        // One notification matched, and it describes a one-to-one conversation.
+        OneToOne,
         NoMatch,
         Ambiguous,
     };
+
+    // What a correlation result says about whether a message's conversation is known.
+    ThreadEvidence thread_evidence_for(Correlation correlation);
 
     // Matches arriving MAP messages against recent Messages notifications.
     class GroupCorrelator {

@@ -1071,7 +1071,9 @@ namespace tether::bluetooth {
                 if (g_group_replies_enabled) {
                     GroupInfo info;
                     std::lock_guard<std::mutex> group_lock(g_group_mutex);
-                    if (g_correlator.correlate(message.body, now, info) == Correlation::Matched) {
+                    const Correlation correlation = g_correlator.correlate(message.body, now, info);
+                    message.thread_evidence = thread_evidence_for(correlation);
+                    if (correlation == Correlation::Matched) {
                         const std::string key = group_thread_key(info);
                         if (!key.empty()) {
 

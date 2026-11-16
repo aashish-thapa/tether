@@ -156,9 +156,21 @@ namespace tether::bluetooth {
 
         GroupInfo info;
         if (!parse_group_notification(match->sender, match->subtitle, info))
-            return Correlation::NoMatch;
+            return Correlation::OneToOne;
         out = info;
         return Correlation::Matched;
+    }
+
+    ThreadEvidence thread_evidence_for(Correlation correlation) {
+        switch (correlation) {
+        case Correlation::Matched:
+        case Correlation::OneToOne:
+            return ThreadEvidence::Notification;
+        case Correlation::NoMatch:
+        case Correlation::Ambiguous:
+            return ThreadEvidence::Unconfirmed;
+        }
+        return ThreadEvidence::Unconfirmed;
     }
 
     const char* to_string(ReplyEligibility eligibility) {

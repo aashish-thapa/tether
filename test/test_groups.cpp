@@ -77,8 +77,7 @@ TEST(Groups, UnnamedGroupKeyDoesNotDependOnMemberOrder) {
     ASSERT_TRUE(parse_group_notification("Alice", "To you, Bob & Carol", first));
     ASSERT_TRUE(parse_group_notification("Carol", "To Bob, you & Alice", second));
 
-    EXPECT_NE(group_thread_key(first), group_thread_key(second))
-        << "different member sets are different conversations";
+    EXPECT_NE(group_thread_key(first), group_thread_key(second)) << "different member sets are different conversations";
 
     GroupInfo reordered;
     ASSERT_TRUE(parse_group_notification("Alice", "To Carol, you & Bob", reordered));
@@ -134,6 +133,25 @@ TEST(Groups, ReportsNoMatchForAnUnrelatedMessage) {
     EXPECT_EQ(correlator.correlate("something else entirely", 101, info), Correlation::NoMatch);
 }
 
+// A one-to-one notification still confirms the conversation, which is what
+// tells it apart from a message no notification explained.
+TEST(Groups, ReportsAOneToOneNotificationAsSuch) {
+    GroupCorrelator correlator;
+    correlator.observe(notification("Alice", "", "see you there", 100));
+
+    GroupInfo info;
+    EXPECT_EQ(correlator.correlate("see you there", 101, info), Correlation::OneToOne);
+}
+
+// A message no single notification explained may be a group message filed under
+// its sender, so its one-to-one thread is not a safe place to aim a reply.
+TEST(Groups, OnlyAMatchedNotificationConfirmsTheConversation) {
+    EXPECT_EQ(thread_evidence_for(Correlation::Matched), ThreadEvidence::Notification);
+    EXPECT_EQ(thread_evidence_for(Correlation::OneToOne), ThreadEvidence::Notification);
+    EXPECT_EQ(thread_evidence_for(Correlation::NoMatch), ThreadEvidence::Unconfirmed);
+    EXPECT_EQ(thread_evidence_for(Correlation::Ambiguous), ThreadEvidence::Unconfirmed);
+}
+
 TEST(Groups, ExpiryDropsStaleNotifications) {
     GroupCorrelator correlator;
     correlator.observe(notification("Alice", "To you & Bob", "hello", 100));
@@ -144,9 +162,8 @@ TEST(Groups, ExpiryDropsStaleNotifications) {
 // --- Reply routing -------------------------------------------------------
 
 TEST(Groups, ResolvesAnUnnamedGroupWhenEveryNameIsUnambiguous) {
-    auto contacts = contacts_with(
-        "BEGIN:VCARD\nFN:Bob\nTEL:+15550000002\nEND:VCARD\n"
-        "BEGIN:VCARD\nFN:Carol\nTEL:+15550000003\nEND:VCARD\n");
+    auto contacts = contacts_with("BEGIN:VCARD\nFN:Bob\nTEL:+15550000002\nEND:VCARD\n"
+                                  "BEGIN:VCARD\nFN:Carol\nTEL:+15550000003\nEND:VCARD\n");
 
     GroupInfo info;
     ASSERT_TRUE(parse_group_notification("Alice", "To you, Bob & Carol", info));
@@ -162,9 +179,8 @@ TEST(Groups, ResolvesAnUnnamedGroupWhenEveryNameIsUnambiguous) {
 // A name matching two contacts must never be resolved by picking one: the
 // message would go to a stranger.
 TEST(Groups, RefusesAnAmbiguousParticipantName) {
-    auto contacts = contacts_with(
-        "BEGIN:VCARD\nFN:Bob\nTEL:+15550000002\nEND:VCARD\n"
-        "BEGIN:VCARD\nFN:Bob\nTEL:+15559999999\nEND:VCARD\n");
+    auto contacts = contacts_with("BEGIN:VCARD\nFN:Bob\nTEL:+15550000002\nEND:VCARD\n"
+                                  "BEGIN:VCARD\nFN:Bob\nTEL:+15559999999\nEND:VCARD\n");
 
     GroupInfo info;
     ASSERT_TRUE(parse_group_notification("Alice", "To you & Bob", info));
@@ -257,16 +273,15 @@ TEST(Groups, RepliesAreOffUntilEnabled) {
 
     std::vector<Recipient> recipients;
     std::string reason;
-    EXPECT_EQ(
-        resolve_group_recipients(info, group_thread_key(info), ContactStore{}, GroupRoster{}, false, recipients, reason),
-        ReplyEligibility::Disabled);
+    EXPECT_EQ(resolve_group_recipients(
+                  info, group_thread_key(info), ContactStore{}, GroupRoster{}, false, recipients, reason),
+              ReplyEligibility::Disabled);
 }
 
 // iOS reports nothing when a member is silently added, so an unfamiliar sender
 // is the only evidence that a roster has gone stale.
 TEST(Groups, AnUnknownSenderInvalidatesTheRoute) {
-    std::vector<Recipient> recipients{{RecipientKind::Tel, "+15550000002"},
-                                      {RecipientKind::Tel, "+15550000003"}};
+    std::vector<Recipient> recipients{{RecipientKind::Tel, "+15550000002"}, {RecipientKind::Tel, "+15550000003"}};
 
     EXPECT_FALSE(sender_invalidates_route("tel:+15550000002", recipients));
     EXPECT_TRUE(sender_invalidates_route("tel:+15557654321", recipients));

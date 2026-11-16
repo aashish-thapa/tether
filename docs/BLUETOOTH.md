@@ -947,6 +947,7 @@ These are properties of what iOS exposes:
 - ANCS supports positive/negative notification actions only. There is no free-text reply over ANCS, replies go through MAP.
 - No attachments, reactions, typing indicators, or read receipts.
 - MAP gives no conversation identifier and no participant list for group messages, so group support is a guess and is conservative by default.
+- With group messages on, a message that no single Messages notification explains (none arrived, or several carried the same text) may be a group message filed under its sender. Its popup offers no reply, since a reply would reach the sender alone. The conversation in the app is unaffected.
 - No RSSI for a connected device, so proximity is a yes/no, never a distance. See the 2026-09-08 entry below.
 - A phone that switches Bluetooth off, goes into airplane mode or runs out of battery reports `Reason.Remote`, which is indistinguishable from the user doing it deliberately. Locking on away therefore does not cover it.
 

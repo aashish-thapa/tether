@@ -315,10 +315,13 @@ int main(int argc, char** argv) {
             tether::bluetooth::ancs::Notification as_notification;
             as_notification.app_id = tether::bluetooth::ancs::APP_ID_MESSAGES;
             // The reply action is only offered for a thread that has a route back.
+            // One whose conversation was never confirmed may be a group filed under
+            // its sender, and replying would reach the sender alone.
             tether::bluetooth::Recipient recipient;
             std::string reply_error;
             const bool repliable =
-                !unknown && tether::bluetooth::recipient_from_thread_key(message.thread_key, recipient, reply_error);
+                !unknown && message.thread_evidence != tether::bluetooth::ThreadEvidence::Unconfirmed &&
+                tether::bluetooth::recipient_from_thread_key(message.thread_key, recipient, reply_error);
             notifier.notify({_("Messages"),
                              who.empty() ? "iPhone" : who,
                              tether::popup_previews_enabled() ? message.body : std::string{},
